@@ -1,3 +1,21 @@
+**§0. Phasing Is a Guide, Not a Blind Queue — Core Maintainability Gate**
+
+Phases 0-5 constitute **"Core."** Phases 6 (LLM Creative Integrations) and 7
+(Automation Pipelines) are **not allowed to begin** until Core passes the
+**Core Maintainability Gate** defined in `docs/18-codebase-health-guardrails.md`.
+This is a deliberate, named checkpoint — not implicit — specifically because
+the predecessor C++/Qt project reached ~25k LOC of unmaintainable spaghetti
+by the time it got this far, and LLM-integration features were part of what
+got bolted on under that decay (see ADR-008). We are not repeating that.
+
+Order of Core phases (0→5) stays sequential as written below. What's
+flexible is what happens **after** Core: once the Gate passes, the human
+orchestrator chooses whether Phase 6 (LLM/image-gen) or Phase 7
+(Automation) goes next based on product priority at that time — both are
+equally "unlocked," neither is forced to wait on the other.
+
+---
+
 **Phase Roadmap — Entry/Exit Criteria**
 
 Each phase below lists: **Goal**, **Primary crates touched/created** (paths per
