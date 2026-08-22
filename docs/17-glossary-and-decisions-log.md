@@ -83,3 +83,30 @@ revisited during development — this is a living doc.
 - **Consequence:** `suno-http-client-core` development is necessarily
   iterative/gap-filled rather than fully spec'd upfront; per doc 03 §7, the
   agent must stop and request a capture rather than invent a payload shape.
+
+---
+
+**ADR-008: LLM Chat & Image-Gen priority moved earlier; explicit codebase-health gate added**
+- **Status:** Accepted
+- **Context:** Prior C++/Qt prototype grew to ~25k LOC of spaghetti before
+  these features were reached. Two causes identified: (1) feature work
+  outpaced architectural discipline, (2) creative/LLM-integration features
+  were bolted on late without a clean seam, encouraging shortcuts.
+- **Decision:**
+  1. Doc 04's Phase 6 (LLM Creative Integrations) is **re-sequenced to
+     immediately follow whichever of Phases 1-5 constitutes "core" being
+     production-grade and maintainable** — not rigidly fixed at position 6
+     by number. Practically: Phases 1-5 (accounts/library, playback,
+     lyrics, visualizer, canvas) are the "core" that must clear the new
+     **Core Maintainability Gate** (doc 18) before Phase 6 (LLM/image-gen)
+     OR Phase 7 (automation) proceeds — whichever the human orchestrator
+     chooses to tackle next at that point. Phase numbers in doc 04 are
+     retained as-written for reference, but doc 04 §0 is amended (below)
+     to state this gate explicitly rather than treating phase numbers as a
+     strict queue.
+  2. A new doc, `docs/18-codebase-health-guardrails.md`, defines the actual
+     mechanical/process checks that constitute "production grade and
+     maintainable" — not just vibes — and mandates a **Core Maintainability
+     Gate audit** before Phase 6/7 begins.
+- **Consequence:** The agent must treat the Phase 5→6/7 boundary as a hard
+  stop requiring an explicit audit pass, not a soft suggestion.
