@@ -1,0 +1,76 @@
+[workspace]
+resolver = "2"
+members = [
+    "app/Suno Station-app",
+
+    "crates/foundation/error-and-result-conventions",
+    "crates/foundation/app-configuration-loader",
+    "crates/foundation/structured-logging-and-tracing",
+    "crates/foundation/design-tokens-theme-definitions",
+
+    "crates/external-bridges/suno-http-client-core",
+    "crates/external-bridges/suno-auth-manual-token-paste",
+    "crates/external-bridges/suno-auth-embedded-webview-login",
+    "crates/external-bridges/suno-auth-oauth-loopback-google-fb",
+    "crates/external-bridges/os-keyring-secret-storage",
+    "crates/external-bridges/visualizer-projectm-ffi-bindings",
+    "crates/external-bridges/visualizer-projectm-frame-bridge",
+    "crates/external-bridges/audio-decode-symphonia-bridge",
+    "crates/external-bridges/audio-io-cpal-bridge",
+    "crates/external-bridges/whisper-transcription-bridge",
+    "crates/external-bridges/video-export-ffmpeg-process",
+    "crates/external-bridges/llm-text-provider-adapter",
+    "crates/external-bridges/image-gen-provider-adapter",
+    "crates/external-bridges/plugin-host-stub",
+
+    "crates/domain-stores/account-profile-store",
+    "crates/domain-stores/suno-remote-library-cache-store",
+    "crates/domain-stores/local-download-manager-store",
+    "crates/domain-stores/lyrics-and-alignment-store",
+    "crates/domain-stores/canvas-scene-and-keyframe-store",
+    "crates/domain-stores/automation-pipeline-definition-store",
+    "crates/domain-stores/recorded-audio-take-store",
+
+    "crates/application-services/suno-library-sync-service",
+    "crates/application-services/suno-bulk-library-operations-service",
+    "crates/application-services/track-download-orchestration-service",
+    "crates/application-services/local-playback-parity-service",
+    "crates/application-services/karaoke-lyric-timing-resolution-service",
+    "crates/application-services/single-track-visualizer-render-service",
+    "crates/application-services/canvas-overlay-compositing-service",
+    "crates/application-services/automation-batch-render-orchestrator",
+    "crates/application-services/audio-recording-capture-service",
+
+    "crates/ui/ui-app-shell-and-navigation",
+    "crates/ui/ui-shared-widget-library",
+    "crates/ui/ui-screen-account-management",
+    "crates/ui/ui-screen-remote-library-browser",
+    "crates/ui/ui-screen-local-library-browser",
+    "crates/ui/ui-screen-lyrics-editor",
+    "crates/ui/ui-screen-visualizer-preview",
+    "crates/ui/ui-screen-canvas-scene-editor",
+    "crates/ui/ui-screen-automation-pipeline-builder",
+    "crates/ui/ui-screen-settings-and-theming",
+    "crates/ui/ui-screen-recording-studio",
+
+    "crates/shared-test-support/suno-api-fixture-mocks",
+    "crates/shared-test-support/deterministic-test-clock-and-ids",
+]
+
+[workspace.package]
+edition = "2021"
+license = "UNLICENSED"
+publish = false
+
+[workspace.dependencies]
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "1"
+tracing = "0.1"
+chrono = { version = "0.4", features = ["serde"] }
+uuid = { version = "1", features = ["v4", "serde"] }
+secrecy = { version = "0.8", features = ["serde"] }
+
+**NOTE: pin exact versions once Phase 0 dependency selection is finalized.**
+**Placeholder ranges above are a starting point, not a locked decision.**
