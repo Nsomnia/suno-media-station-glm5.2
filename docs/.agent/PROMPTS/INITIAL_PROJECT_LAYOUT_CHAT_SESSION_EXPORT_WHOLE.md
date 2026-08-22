@@ -153,14 +153,14 @@ This is captured in the docs below. Now generating the full doc set — copy eac
 docs/00-project-charter.md
 ```
 ```markdown
-**Project Charter — "Sonora" (working name)**
+**Project Charter — "Suno Station" (working name)**
 
-> Working name used throughout these docs: **Sonora**. Rename freely at repo init —
+> Working name used throughout these docs: **Suno Station**. Rename freely at repo init —
 > it's a find/replace across doc-set, not a design decision.
 
 **1. Vision**
 
-Sonora is a native, Rust-built desktop companion to Suno.com that gives power users
+Suno Station is a native, Rust-built desktop companion to Suno.com that gives power users
 capabilities the official web/mobile clients don't offer — full remote library control,
 local library parity, AI-assisted lyric/art generation, real-time audio-reactive
 visualizer "music videos" with karaoke-grade synced lyrics, a design canvas for on-brand
@@ -168,7 +168,7 @@ overlays, keyframe animation, an automation pipeline for batch-producing content
 scale, and a long-horizon path toward a built-in lightweight DAW for recording source
 audio destined for Suno.
 
-Sonora is *not* a Suno replacement or a music generation engine. It is a control-plane
+Suno Station is *not* a Suno replacement or a music generation engine. It is a control-plane
 and creative-production layer built on top of Suno's remote data plus local media
 tooling.
 
@@ -190,22 +190,22 @@ tooling.
    image-gen (cover art) adapters, calling out to remote APIs or local
    OpenAI-compatible/ComfyUI-style servers. Not core-path early work.
 7. **Extensibility** — plugin system (scripting first, WASM later) so end users can
-   extend effects/automation without a Sonora release.
+   extend effects/automation without a Suno Station release.
 
 **3. Non-Goals (explicit, revisit only via ADR)**
 
-- Sonora does **not** implement music generation. It is a client/production tool
+- Suno Station does **not** implement music generation. It is a client/production tool
   around Suno's generated audio.
-- Sonora does **not** attempt to be a full multitrack DAW at v1. Recording is
+- Suno Station does **not** attempt to be a full multitrack DAW at v1. Recording is
   "capture a take for upload to Suno," not "produce an album." JUCE-equivalent DAW
   work is an explicit late-phase stretch goal (Phase 9), not core scope.
-- Sonora does **not** ship a real-time diffusion image model. Image generation is an
+- Suno Station does **not** ship a real-time diffusion image model. Image generation is an
   adapter over remote APIs or an existing local server (ComfyUI/A1111-style), never a
   from-scratch Rust inference stack (unless a future ADR revisits this).
-- Sonora does **not** attempt to reverse-engineer Suno's *generation* pipeline —
+- Suno Station does **not** attempt to reverse-engineer Suno's *generation* pipeline —
   only its account/library/asset/lyrics REST & realtime surfaces needed for client
   functionality.
-- No cloud backend of our own. Sonora is a local-first desktop app; any server-side
+- No cloud backend of our own. Suno Station is a local-first desktop app; any server-side
   component (if ever needed for OAuth relay) is minimal and documented separately.
 
 **4. Target Users**
@@ -273,7 +273,7 @@ docs/01-architecture-overview.md
 ```
 
 ┌─────────────────────────────────────────────────────────────────┐
-│                         sonora-app (bin)                        │
+│                         Suno Station-app (bin)                        │
 │   native shell window, routing, top-level app state              │
 └───────────────┬───────────────────────────────┬─────────────────┘
                 │                               │
@@ -312,7 +312,7 @@ docs/01-architecture-overview.md
    UI thread, ever.
 5. **Errors:** every crate defines its own `Error` enum (via `thiserror`); no
    crate returns another crate's error type directly across its public API
-   boundary — wrap it. `anyhow` is allowed only in the top-level `sonora-app` binary
+   boundary — wrap it. `anyhow` is allowed only in the top-level `Suno Station-app` binary
    and in test code, never in library crate public signatures.
 6. **State ownership:** each domain concern owns its own state store crate
    (e.g. `library-store`, `account-store`, `pipeline-store`) backed by SQLite;
@@ -336,7 +336,7 @@ docs/01-architecture-overview.md
   bridges).
 - **Layer 4 — UI:** app shell/navigation, per-feature screens, shared widget
   library, theme application.
-- **Layer 5 — Binary:** `sonora-app`, composition root only. Should contain
+- **Layer 5 — Binary:** `Suno Station-app`, composition root only. Should contain
   almost no logic — just wiring.
 
 Dependencies only ever point downward (Layer 4 → 3 → 2 → 1 → 0). This is enforced
@@ -441,7 +441,7 @@ one.
 
 ```
 
-sonora/
+Suno Station/
 ├── Cargo.toml                         # workspace root
 ├── docs/                              # this doc set (source of truth)
 ├── crates/
@@ -506,7 +506,7 @@ sonora/
 │       └── deterministic-test-clock-and-ids/    # test helpers for time/uuid determinism
 │
 ├── app/
-│   └── sonora-app/                    # the binary crate; composition root only
+│   └── Suno Station-app/                    # the binary crate; composition root only
 │       ├── Cargo.toml
 │       └── src/main.rs
 │
@@ -707,7 +707,7 @@ docs/17-glossary-and-decisions-log.md
 
 **Glossary**
 
-- **Sonora** — working project name (this app).
+- **Suno Station** — working project name (this app).
 - **Bridge crate** — a crate whose sole job is wrapping an external process/
   library/service behind a small trait, isolating the rest of the codebase from
   its concrete API.
@@ -832,7 +832,7 @@ theming, logging, config, and the full workspace skeleton in place.
 
 **Crates:**
 - All of `foundation/*`
-- Workspace root `Cargo.toml`, `app/sonora-app` binary (opens a themed empty
+- Workspace root `Cargo.toml`, `app/Suno Station-app` binary (opens a themed empty
   window with nav placeholder)
 - Stub `lib.rs`/`README.md` for every crate in doc 02's full tree (even ones
   not implemented until much later)
@@ -1123,7 +1123,7 @@ step types are a fixed, built-in set for now.
 
 **Goal:** Promote `plugin-host-stub` into a working scripting-based plugin
 system (Rhai preferred per doc 03/doc 11), letting users author custom canvas
-effects and/or automation pipeline steps without a Sonora release.
+effects and/or automation pipeline steps without a Suno Station release.
 
 **Crates:**
 - Replace `external-bridges/plugin-host-stub` internals (keep its public
@@ -1470,7 +1470,7 @@ Cargo.toml
 [workspace]
 resolver = "2"
 members = [
-    "app/sonora-app",
+    "app/Suno Station-app",
 
     "crates/foundation/error-and-result-conventions",
     "crates/foundation/app-configuration-loader",
@@ -2075,7 +2075,7 @@ not as a follow-up ticket.
   exploratory sessions when capturing new endpoints). Process-wrapper bridges
   (`video-export-ffmpeg-process`, `whisper-transcription-bridge`) get a thin
   integration test gated behind a feature flag/env var
-  (`SONORA_TEST_REQUIRES_LOCAL_TOOLING=1`) so CI-less/tool-less environments
+  (`Suno Station_TEST_REQUIRES_LOCAL_TOOLING=1`) so CI-less/tool-less environments
   can skip them without failing the default `cargo test --workspace` run.
 - **Domain-store crates:** integration tests against a real (temp-file or
   in-memory) SQLite instance via `sqlx`'s test utilities — migrations run,
@@ -2789,10 +2789,10 @@ later enhancement, not a hard dependency.
 
 **1. Scope & Philosophy**
 
-Sonora does not implement LLM inference or image diffusion itself — it
+Suno Station does not implement LLM inference or image diffusion itself — it
 provides **adapters** over remote APIs and/or local OpenAI-compatible or
 ComfyUI/A1111-style servers the user already runs. This keeps the crate
-thin, keeps Sonora's own maintenance burden low (per doc 18's core
+thin, keeps Suno Station's own maintenance burden low (per doc 18's core
 philosophy of avoiding scope-driven decay), and lets users bring whichever
 provider/model they already pay for or self-host.
 
@@ -3134,7 +3134,7 @@ so the phase isn't started from a blank slate:
 - "Recreate something like JUCE" (per the original product notes) is an
   extremely large undertaking if taken literally (JUCE is a mature,
   decades-refined C++ audio framework) — Phase 9's actual doc should scope
-  this down explicitly to "the specific DSP/mixing capabilities Sonora's
+  this down explicitly to "the specific DSP/mixing capabilities Suno Station's
   recording-for-Suno use case needs," not "build a general audio framework
   competing with JUCE," per doc 00 §3's non-goals precedent. Flag this
   explicitly to the human orchestrator when Phase 9 planning begins, since
@@ -3330,7 +3330,7 @@ Format: `- [ ] <idea> — (surfaced during: <phase/task>, date if useful)`
 README.md  (repo root — index into the doc set)
 ```
 ```markdown
-**Sonora**
+**Suno Station**
 
 A native Rust desktop companion for Suno.com: full remote library control,
 local playback parity, karaoke-grade synced lyrics (Suno-provided + local
@@ -3397,7 +3397,7 @@ That's the complete planning doc set: charter, architecture, workspace layout, a
 
 A few things worth a quick gut-check from you before you start feeding these into the coding agent:
 
-1. **Naming** — "Sonora" was just a placeholder working name I picked for reference-consistency across docs. Rename now (cheap, it's a find/replace) or keep it as a codename and decide branding later?
+1. **Naming** — "Suno Station" was just a placeholder working name I picked for reference-consistency across docs. Rename now (cheap, it's a find/replace) or keep it as a codename and decide branding later?
 2. **Phase 0 kickoff prompt** — want me to draft the actual first implementation prompt (referencing docs 00-03, 08, 09§4 spike, 18) that you'd paste into the agent to kick off scaffolding, or are you set to write that yourself now that the doc set exists?
 3. Anything across this whole set that reads as over-engineered or under-specified now that you see it all together?
 
@@ -3613,7 +3613,7 @@ parallel sub-task while another is mid-review, or keeping a long-lived
 Phase-0-spike branch checked out separately from day-to-day Phase 1 work).
 
 - **Convention:** worktrees live as sibling directories to the main repo
-  checkout: `../sonora-worktrees/<branch-slug>/` (adjust `sonora` to the
+  checkout: `../Suno Station-worktrees/<branch-slug>/` (adjust `Suno Station` to the
   user's actual chosen project name). Never nest a worktree inside the
   main checkout's own tree.
 - Not mandatory for every task — a normal `git checkout -b` is perfectly
@@ -3834,7 +3834,7 @@ TODO.md
       per docs/templates/crate-stub-template)
 - [ ] Implement `structured-logging-and-tracing`, `app-configuration-
       loader`, `design-tokens-theme-definitions` (Catppuccin + Monokai)
-- [ ] `sonora-app` binary: themed empty window + nav shell + working
+- [ ] `Suno Station-app` binary: themed empty window + nav shell + working
       theme-switcher
 - [ ] egui-vs-iced spike + projectM texture-compositing feasibility spike
       (docs/01 §4, docs/09 §4-5) → record decision as ADR
@@ -3863,7 +3863,7 @@ docs/20-phase-0-kickoff-prompt.md
 This is the literal prompt text to paste into the agentic coding harness
 (opencode + oh-my-openagent) to begin implementation. Paste as-is, or
 lightly adjust the project name if you haven't already find-replaced
-"Sonora" throughout the repo.
+"Suno Station" throughout the repo.
 
 ---
 
@@ -3921,7 +3921,7 @@ Then execute Phase 0 exactly as scoped in docs/04-phase-roadmap.md's
    entire visualizer architecture. Record the outcome — including the
    projectM build/packaging decision (system-installed vs. vendored via
    build.rs) — as a new ADR in docs/17.
-5. Build `sonora-app`: a themed, empty window with a left-nav shell
+5. Build `Suno Station-app`: a themed, empty window with a left-nav shell
    (sections can be placeholder/disabled for now) and a working
    theme-switcher proving the design-token pipeline works end to end.
 6. Build the `xtask` `check-layering` command per docs/18 §2.1.
@@ -3982,4 +3982,4 @@ Also at repo root:
 
 That closes the full-lifecycle governance gap: git branching/worktrees/PR discipline, `AGENTS.md` + `TODO.md` as guaranteed-current living artifacts, the ask-vs-infer decision protocol, explicit tooling permissions (brew/git-clone/`gh`), the "no cost ceiling but context still finite" clarification, full-SDLC role coverage, doc versioning convention, and a literal paste-ready Phase 0 kickoff prompt.
 
-The doc set (00–20 + 99, plus root `AGENTS.md`/`TODO.md`) is now complete end-to-end — from vision through architecture through anti-spaghetti guardrails through git ops through the actual first prompt. Once you've dropped these into your repo and swapped "Sonora" for your real project name, doc 20 is what you paste to kick everything off. 🎉
+The doc set (00–20 + 99, plus root `AGENTS.md`/`TODO.md`) is now complete end-to-end — from vision through architecture through anti-spaghetti guardrails through git ops through the actual first prompt. Once you've dropped these into your repo and swapped "Suno Station" for your real project name, doc 20 is what you paste to kick everything off. 🎉
