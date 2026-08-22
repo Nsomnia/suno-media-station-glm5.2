@@ -147,3 +147,154 @@ A task is not done until:
   intentionally stub-only until their phases arrive — do not "helpfully"
   flesh them out early; empty, well-documented boilerplate is the correct
   state for them pre-phase.
+
+---
+
+**9. Decision-Making Protocol: Ask vs. Infer**
+
+Not every ambiguity warrants stopping to ask the human orchestrator — but
+silently guessing on consequential decisions is equally wrong. Use this
+test:
+
+- **Architecture-level, hard-to-reverse, or contradicts/extends a doc?**
+  → STOP. Present the human a short **multiple-choice** breakdown (2-4
+  labeled options, each with a one-line tradeoff, plus your own
+  recommended pick) — mirror the exact style used to originally scope this
+  project (docs 00-18 were built this way; keep using it for the same
+  reason: it's fast for the human to answer and forces the agent to have
+  already thought through the tradeoffs before asking). Do not proceed
+  until answered. Record the outcome as a new ADR (doc 17) once decided.
+- **Local implementation detail, fully within an already-decided
+  architecture, cheaply reversible?** → Infer a reasonable choice, proceed,
+  and note the inference briefly in the task's commit/PR description
+  ("Note: chose X naming/shape for Y, not specified in docs, easily
+  changed if wrong") so the human can correct it cheaply on review without
+  it having blocked progress.
+- **When genuinely 50/50 even after research** (checked docs, checked
+  prior art per §3) — default to asking rather than guessing. Being asked
+  slightly too often is a cheap failure mode; silently baking in a wrong
+  consequential assumption across dozens of downstream files is an
+  expensive one.
+
+**10. AGENTS.md & TODO.md — Mandatory, Always-Current**
+
+- **`AGENTS.md`** (repo root, plus optionally one per major subtree — see
+  doc 19 §6) is the front-door orientation file for any agent (this one, a
+  future session of this one, or a different model entirely) picking up
+  this codebase cold. It must always accurately reflect current reality:
+  where the docs live, what phase the project is in, what the immediate
+  next steps are, and pointers to the constitution/guardrail docs. Treat a
+  stale `AGENTS.md` as a bug, same as a stale doc 02 crate tree (doc 18
+  §2.5).
+- **`TODO.md`** (repo root) is the living task tracker — the single place
+  a human or agent looks to answer "what's in flight, what's next, what's
+  blocked." It must be updated **at the start and end of every work
+  session/task**, without exception — this is part of the Definition of
+  Done (§5) from this point forward: a task is not "done" if `TODO.md`
+  still shows it as pending/in-progress. Structure and template are
+  defined in doc 19 §7.
+- Both files are **guaranteed-maintained artifacts**, not best-effort —
+  they exist specifically so a fresh agent context (after a reset, a
+  model switch, or a long gap) can resume orchestration correctly without
+  the human having to re-explain project state from memory.
+
+**11. Token/Compute Budget Reality — No Hard Cost Ceiling, Context Still Finite**
+
+The primary development model runs on a free tier (OpenRouter/opencode/
+kilocode-hosted, GLM-5.2 primary), so **token *cost* is not a constraint to
+optimize for** within sane bounds — do not shortcut research depth, test
+thoroughness, self-review rigor (§4), or prior-art search (§3) to "save
+tokens" in the cost sense. Be as thorough as the task genuinely warrants.
+
+This does **not** eliminate the value of the caveman-speak internal
+scratchpad convention (§6) — that convention exists for **context-window
+economy and reasoning throughput**, not dollar-cost avoidance, and remains
+worthwhile: a model's context window is still finite regardless of price,
+and terse internal reasoning leaves more effective context available for
+actually-relevant file contents, doc excerpts, and tool output. So:
+**think efficiently (terse scratch channel), but don't work superficially
+(skip steps) to save money that isn't actually a limiting factor here.**
+When in doubt, prefer the more thorough path.
+
+**12. Local Tooling Acquisition Permissions**
+
+The agent is explicitly permitted, and encouraged where it genuinely
+serves a task, to:
+
+- Install developer tooling on the user's host machine via **Homebrew**
+  (`brew install ...`) — e.g. `ffmpeg`, `sqlite`, build dependencies for
+  `projectM` or `whisper.cpp`, etc.
+- **Clone reference repositories via `gh repo clone` / `git clone`** into a
+  scratch/tmp directory to study implementation patterns or vendor/build a
+  needed C/C++ dependency (e.g. building `projectM` from source if no
+  suitable system package exists) — never committed into this repo
+  verbatim; either build against it as an external dependency, or extract
+  learnings/patterns per the attribution note in §3.
+- Use **`gh` for repo/code search** (`gh search repos`, `gh search code`)
+  as the default first move before writing any non-trivial subsystem from
+  scratch (§3) — this is not optional flourish, it is the mandated
+  first step.
+- Run arbitrary local build/inspect commands (`cmake`, `cargo install`,
+  `pkg-config`, etc.) as needed to get a dependency working, rather than
+  stopping at "this might require system setup I can't do" — the agent
+  has shell access and should use it.
+- When a tool/library installation could have side effects the human might
+  not want (e.g. installing a large toolchain, modifying global system
+  state beyond the project), briefly state what's about to be
+  installed/why before doing it — not a full stop-and-ask per §9's test
+  (this is typically a low-consequence, reversible action), just a
+  transparency note in the task's output.
+
+**13. File & Documentation Versioning Convention**
+
+- Every file in `docs/` carries a header metadata line directly under its
+  H1 title:
+  ```
+  > **Last Updated:** YYYY-MM-DD · **Status:** Draft | Active | Superseded
+  ```
+  Update the date whenever a doc's *content* meaningfully changes (not for
+  trivial typo fixes). `Status: Superseded` is used rather than deleting a
+  doc outright if a later decision fully replaces it — link to its
+  replacement in that case.
+- Source code (`.rs` files) does **not** duplicate a "last modified" stamp
+  in-file — git history is the authoritative, always-accurate source of
+  truth for that, and an in-file timestamp would only ever go stale and
+  mislead. Where "freshness" matters for a generated artifact (e.g. a
+  crate's `README.md` stub's "Public API status" line, per doc 18 §2.3),
+  keep that specific line current as part of the relevant task's DoD
+  instead of a blanket timestamp convention.
+- `TODO.md` and `AGENTS.md` (§10) are the two files expected to change
+  most frequently and are explicitly exempted from needing a "last
+  updated" header — their freshness is enforced by the DoD requirement
+  itself (§5, §10), not by a date stamp.
+
+**14. Full Dev-Team Role Coverage (expands §4)**
+
+Because no human writes code on this project, the agent must consciously
+rotate through **every** role a real team would staff, not just
+implementer/reviewer (§4). Depending on the task at hand, explicitly adopt
+the relevant hat:
+
+- **Product/Project Lead:** keeps work aligned to doc 00's pillars and doc
+  04's phase scope; owns saying "no, that's backlog" (§8) and updating
+  `TODO.md`/`AGENTS.md` (§10).
+- **Software Architect:** owns doc 01/02 layering integrity and the doc 18
+  guardrails; performs the end-of-phase Senior Architect Pass (doc 18 §3).
+- **Senior/Junior Engineer:** implements per §1-§3 of this doc.
+- **QA/Test Engineer:** ensures doc 16's test levels are actually satisfied
+  per task, not just "code compiles."
+- **DevOps/Release Engineer:** owns git hygiene per doc 19 — branches,
+  worktrees, PR creation via `gh`, and (later) tagging/release mechanics.
+- **Technical Writer:** keeps every doc-reality-sync obligation (doc 18
+  §2.5, §13 above) actually current — documentation is a first-class
+  deliverable of every task, not an afterthought squeezed in if time
+  allows.
+- **Security-minded reviewer:** specifically for anything touching
+  credentials/secrets (doc 05 §3, doc 16 §7) — treat this as a distinct
+  mandatory lens, not folded silently into general code review.
+
+A single task may only need 2-3 of these hats actively; the point is
+*conscious* coverage — don't let "nobody's job" gaps (a classic cause of
+real-world project decay, and a contributor to the predecessor project's
+spaghetti per ADR-008) exist just because no human was assigned that
+function.
