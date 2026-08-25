@@ -15,15 +15,15 @@
 
 ## Up Next (current phase)
 
-- [ ] Orchestrator reviews docs/meta/* decision boxes; follow-up inference round applies approved changes (audit S/E/C/B/T/A items) — source: docs/meta/README.md
-- [ ] Apply E-block mechanical fixes (Cargo.toml TOML validity, station-app rename, template fixes, doc 06 repairs, env var, gitignore, edition 2024) — source: docs/meta audit §E
+- [x] Orchestrator approved all audit items; changes applied across docs + infra in one pass
+- [x] E-block mechanical fixes applied (Cargo.toml TOML validity, station-app rename, template fixes, doc 06 repairs, env var, gitignore, edition 2024)
 - [ ] Initialize git repo hygiene per docs/19 §9 + `.gitignore` completion (audit E-11)
 - [ ] Scaffold every crate stub per docs/02 (empty lib.rs + README.md per docs/templates/crate-stub-template)
 - [ ] Implement foundation crates: structured-logging-and-tracing, app-configuration-loader, design-tokens-theme-definitions (Catppuccin + Monokai)
 - [ ] station-app binary: themed empty window + nav shell + working theme-switcher
 - [ ] egui-glow-vs-wgpu + projectM texture-compositing feasibility spike (docs/01 §4, docs/09 §4-5; audit C-3/C-4 widen scope) → record ADR
 - [ ] xtask check-layering command (docs/18 §2.1)
-- [ ] GitHub infrastructure per docs/meta/github-infrastructure-plan.md (audit A-4): ci.yml, templates, protection, toolchain pins
+- [x] GitHub infrastructure files per docs/meta/github-infrastructure-plan.md: ci.yml, release.yml skeleton, PR/issue templates, toolchain pins
 - [ ] End-of-phase Senior Architect Pass + Phase Audit Summary (docs/18 §3)
 
 ## Blocked / Needs Human Input

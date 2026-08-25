@@ -30,6 +30,6 @@ index as needed.
 
 ## Status
 
-- [~] Audit round authored, awaiting orchestrator decisions
-- [ ] Approved changes applied to main doc set
+- [x] Audit round authored, decisions approved by orchestrator
+- [x] Approved changes applied to main doc set
 - [ ] This directory reduced to living process docs (audit file archived)
