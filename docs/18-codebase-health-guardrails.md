@@ -1,6 +1,8 @@
-**Codebase Health Guardrails & Core Maintainability Gate**
+# Codebase Health Guardrails & Core Maintainability Gate
 
-**1. Why This Doc Exists**
+> **Last Updated:** 2026-08-25 · **Status:** Active
+
+## 1. Why This Doc Exists
 
 Small files + deep nesting + verbose names (doc 02, doc 03) prevent
 *individual-file* spaghetti. They do **not** by themselves prevent
@@ -13,9 +15,9 @@ not a "files were too long" problem. This doc defines concrete, checkable
 guardrails against that specific failure mode, and the **Core Maintainability
 Gate** that must be passed before Phase 6/7 work begins (per ADR-008).
 
-**2. Continuous Guardrails (checked throughout Phases 0-5, not just at the end)**
+## 2. Continuous Guardrails (checked throughout Phases 0-5, not just at the end)
 
-**2.1 Dependency Direction Enforcement**
+### 2.1 Dependency Direction Enforcement
 - Doc 01 §3's layering (`ui → application-services → domain-stores →
   external-bridges → foundation`) must hold with **zero exceptions**. Any
   task whose implementation seems to require an upward dependency (e.g. a
@@ -29,7 +31,7 @@ Gate** that must be passed before Phase 6/7 work begins (per ADR-008).
   time is cheap and catching it after 50 more commits build on top of it is
   expensive.
 
-**2.2 No Duplicate-Logic Crates**
+### 2.2 No Duplicate-Logic Crates
 - Before creating a new crate, the agent must confirm (via a quick search of
   `docs/02-workspace-layout.md` + `rg`/grep across `crates/`) that an
   existing crate doesn't already own this responsibility. If two crates end
@@ -41,7 +43,7 @@ Gate** that must be passed before Phase 6/7 work begins (per ADR-008).
   accurately reflect the real crate tree. A crate existing in the repo but
   absent from doc 02 (or vice versa) is itself a Gate failure (§4).
 
-**2.3 Dead Code & Speculative Generality Ban**
+### 2.3 Dead Code & Speculative Generality Ban
 - No `#[allow(dead_code)]` left in committed code as a permanent fixture —
   either the code is used, or it's deleted. Temporary scaffolding during a
   multi-step task is fine; it must be resolved by that task's completion.
@@ -57,7 +59,7 @@ Gate** that must be passed before Phase 6/7 work begins (per ADR-008).
   status line updated from "not yet implemented" to reflect reality in the
   same task — stale status docs are a form of dead documentation-code.
 
-**2.4 Complexity Budget, Not Just Line-Count Budget**
+### 2.4 Complexity Budget, Not Just Line-Count Budget
 - Doc 03's 300-line file cap catches *size*, not *complexity*. Additionally
   watch for and split on:
   - A function/method with more than ~4 levels of nested control flow
@@ -71,7 +73,7 @@ Gate** that must be passed before Phase 6/7 work begins (per ADR-008).
     what a one-paragraph purpose statement can honestly describe — if
     describing the crate needs "and also," it's doing two jobs.
 
-**2.5 Doc-Reality Sync Requirement**
+### 2.5 Doc-Reality Sync Requirement
 - Doc 03 §5's Definition of Done already requires updating relevant docs
   when reality diverges. This guardrail makes it explicit that **the docs
   in this doc-set are treated as tested artifacts, not write-once
@@ -80,7 +82,7 @@ Gate** that must be passed before Phase 6/7 work begins (per ADR-008).
   was made ad-hoc during implementation are all bugs, tracked the same as a
   code bug.
 
-**3. Periodic Self-Audit Ritual ("Senior Architect Pass")**
+## 3. Periodic Self-Audit Ritual ("Senior Architect Pass")
 
 At the end of **every phase** (0 through 5 at minimum; recommended
 thereafter too), before marking that phase's exit criteria as met, the agent
@@ -108,7 +110,7 @@ sprint," not "developer finishing a ticket" — it's the mechanism that
 catches system-level drift the per-task self-review (doc 03 §4) isn't
 scoped to catch.
 
-**4. The Core Maintainability Gate (before Phase 6/7)**
+## 4. The Core Maintainability Gate (before Phase 6/7)
 
 Beyond the per-phase audits (§3), a single consolidated Gate review happens
 once Phase 5 is complete, before Phase 6 or 7 begins. The Gate **passes**
@@ -141,7 +143,7 @@ If the Gate fails on any item, the response is a **consolidation task list**
 (fix the failing items) before any Phase 6/7 feature work starts — this is
 allowed to take real effort; it is the whole point of the Gate.
 
-**5. Audit & Gate Log**
+## 5. Audit & Gate Log
 
 *(Populated over time as phases complete — empty at doc creation.)*
 

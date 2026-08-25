@@ -1,6 +1,8 @@
-**Canvas & Keyframe System Spec**
+# Canvas & Keyframe System Spec
 
-**1. Scope**
+> **Last Updated:** 2026-08-25 · **Status:** Active
+
+## 1. Scope
 
 Covers `canvas-scene-and-keyframe-store` (doc 07 §6 schema), the
 `ui-screen-canvas-scene-editor` UI, and `canvas-overlay-compositing-service`
@@ -8,7 +10,7 @@ Covers `canvas-scene-and-keyframe-store` (doc 07 §6 schema), the
 playback time into a final composited frame, consumed by both live preview
 and export per doc 09 §5).
 
-**2. Core Concepts**
+## 2. Core Concepts
 
 - **Scene** — a saved document: a list of **elements**, each with base
   properties, kind-specific data, keyframe tracks, and effects (doc 07 §6
@@ -34,7 +36,7 @@ and export per doc 09 §5).
   implementation detail, not a user-facing distinction they need to
   understand.
 
-**3. Interpolation & Easing (v1 minimum set)**
+## 3. Interpolation & Easing (v1 minimum set)
 
 - `linear`
 - `ease_in`, `ease_out`, `ease_in_out` (standard cubic easing — use an
@@ -46,7 +48,7 @@ and export per doc 09 §5).
 Additional easing curves are additive later (backlog item), not a v1
 blocker.
 
-**4. Karaoke Text Element — Detail**
+## 4. Karaoke Text Element — Detail
 
 This is the flagship element type, so it gets explicit spec treatment
 rather than being lumped into generic "text":
@@ -68,7 +70,7 @@ rather than being lumped into generic "text":
   word-level timing data to exist (falls back to line-level gracefully with
   a UI indicator if only line-level timing is available for that track).
 
-**5. Canvas Editor UX (high-level; detailed wireframing happens in-phase)**
+## 5. Canvas Editor UX (high-level; detailed wireframing happens in-phase)
 
 - Freeform drag/resize/rotate manipulation of elements directly on a
   live-visualizer-backed canvas (so the user sees real context while
@@ -86,7 +88,7 @@ rather than being lumped into generic "text":
 - Snapping/alignment guides for placement (nice-to-have, not a v1 exit
   criterion — note in Phase 5's doc if deferred).
 
-**6. Compositing Runtime (`canvas-overlay-compositing-service`)**
+## 6. Compositing Runtime (`canvas-overlay-compositing-service`)
 
 Given: a visualizer frame texture (doc 09), a scene, a current playback
 time `t`, and (for karaoke elements) resolved lyric data —
@@ -107,7 +109,7 @@ itself. This service should have **zero knowledge of whether it's being
 called from preview or export** — that separation of concerns is what
 guarantees preview/export visual parity (doc 09 §5's named requirement).
 
-**7. Performance Consideration**
+## 7. Performance Consideration
 
 Text rendering (especially per-word karaoke styling, potentially with
 per-frame color/scale changes) at video-export framerates across

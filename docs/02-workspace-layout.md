@@ -1,14 +1,18 @@
-**Cargo Workspace Layout**
+# Cargo Workspace Layout
+
+> **Last Updated:** 2026-08-25 · **Status:** Active
 
 This is the guideline for rough *directory structure* to scaffold in Phase 0. Every crate's
 `lib.rs` should begin with a doc comment restating its ONE job (copy the
 "Purpose" line below into it). Directories are intentionally deep/verbose per
 the LLM-context-legibility goal — prefer a clear nested path over a clever short
-one. As you can observe below, code is divided into highly specific single intent and purpose classes within yet again specific groups of classes. 
-the codebase when navigated, especially by an LLm, should self-explain itself at a broad high level simply by verbose and dry directory and filename strucutre.
+one. Code is divided into highly specific, single-intent-and-purpose classes
+within specific groups of classes. When navigated — especially by an LLM — the
+codebase should self-explain at a broad high level simply through its verbose,
+dry directory and filename structure.
 
 ```
-Suno Station/
+suno-media-station/
 ├── Cargo.toml                                       # workspace root
 ├── docs/                                            # this doc set (source of truth)
 ├── crates/
@@ -33,7 +37,9 @@ Suno Station/
 │   │   ├── video-export-ffmpeg-process/             # spawn/pipe-to ffmpeg, progress parsing
 │   │   ├── llm-text-provider-adapter/               # trait + OpenAI-compatible impl (stub-priority: low)
 │   │   ├── image-gen-provider-adapter/              # trait + remote/local-server impls (stub-priority: low)
-│   │   └── plugin-host-stub/                        # trait defs + no-op registry only
+│   │   ├── plugin-host-stub/                        # trait defs + no-op registry only
+│   │   ├── suno-generation-client/                  # submit/poll Suno generation jobs
+│   │   └── suno-upload-client/                      # chunked audio upload → clip creation
 │   │
 │   ├── domain-stores/
 │   │   ├── account-profile-store/                   # multi-account CRUD + active-account switching
@@ -42,12 +48,13 @@ Suno Station/
 │   │   ├── lyrics-and-alignment-store/              # remote+whisper timed lyrics, versioned edits
 │   │   ├── canvas-scene-and-keyframe-store/         # scene graph + keyframe track persistence
 │   │   ├── automation-pipeline-definition-store/    # pipeline recipes, run history
-│   │   └── recorded-audio-take-store/               # locally recorded takes metadata
+│   │   ├── recorded-audio-take-store/               # locally recorded takes metadata
+│   │   └── generation-job-store/                    # generation job queue/status persistence
 │   │
 │   ├── application-services/
 │   │   ├── suno-library-sync-service/               # orchestrates cache-store <-> http-client
 │   │   ├── suno-bulk-library-operations-service/    # bulk tag/delete/organize across tracks
-│   │   ├── track-download-orchestration-service/.   # drives download-manager-store end to end
+│   │   ├── track-download-orchestration-service/    # drives download-manager-store end to end
 │   │   ├── local-playback-parity-service/           # unifies remote-stream vs local-file playback
 │   │   ├── karaoke-lyric-timing-resolution-service/ # merges remote+whisper per lyrics-flow doc
 │   │   ├── single-track-visualizer-render-service/  # one-off "render this track as video"
@@ -64,16 +71,17 @@ Suno Station/
 │   │   ├── ui-screen-lyrics-editor/                 # karaoke timing review/edit UI
 │   │   ├── ui-screen-visualizer-preview/            # live preview + one-off render controls
 │   │   ├── ui-screen-canvas-scene-editor/           # freeform placement + keyframe timeline UI
-│   │   ├── ui-screen-automation-pipeline-builder/.  # pipeline authoring + run monitor UI
+│   │   ├── ui-screen-automation-pipeline-builder/    # pipeline authoring + run monitor UI
 │   │   ├── ui-screen-settings-and-theming/          # theme picker, provider keys, prefs
-│   │   └── ui-screen-recording-studio/              # basic capture UI (Phase 9 grows this)
+│   │   ├── ui-screen-recording-studio/              # basic capture UI (Phase 9 grows this)
+│   │   └── ui-screen-creation-studio/               # generation submission, job monitor, persona picker
 │   │
 │   └── shared-test-support/
 │       ├── suno-api-fixture-mocks/                  # recorded/mocked HTTP fixtures for tests
 │       └── deterministic-test-clock-and-ids/        # test helpers for time/uuid determinism
 │
 ├── app/
-│   └── Suno Station-app/                            # the binary crate; composition root only
+│   └── station-app/                                 # the binary crate; composition root only
 │       ├── Cargo.toml 
 │       └── src/main.rs
 │
@@ -85,7 +93,7 @@ Suno Station/
 
 ```
 
-**Notes on This Layout**
+## Notes on This Layout
 
 - **Not every crate listed above needs code on day one.** Phase 0 scaffolds the
   *whole workspace skeleton* with each crate compiling as an empty stub

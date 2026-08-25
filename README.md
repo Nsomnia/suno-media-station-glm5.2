@@ -1,5 +1,4 @@
 # suno-media-station-glm5.2
-Restarting this model with this project duento free infra
 
 ## Doc Index
 
@@ -20,7 +19,7 @@ Restarting this model with this project duento free infra
 | 12 | `docs/12-llm-and-image-gen-provider-adapters.md` | LLM text & image-gen provider adapter spec |
 | 13 | `docs/13-automation-pipeline-engine.md` | Batch automation pipeline engine spec |
 | 14 | `docs/14-local-playback-and-audio-engine.md` | Local playback & audio engine spec |
-| 15 | `docs/15-multi-account-and-downloads-detail.md` | Multi-account & download manager detail |
+| 15 | `docs/15-multi-account-and-downloads-detail.md` | Multi-account & download manager detail — SUPERSEDED, folded into docs 05 & 07 |
 | 16 | `docs/16-testing-strategy.md` | Testing strategy across all crates |
 | 17 | `docs/17-glossary-and-decisions-log.md` | Glossary & architecture decision log (ADRs) |
 | 18 | `docs/18-codebase-health-guardrails.md` | Codebase health guardrails & Core Maintainability Gate |
@@ -31,3 +30,11 @@ Restarting this model with this project duento free infra
 Also at repo root:
 - **`AGENTS.md`** — front-door orientation file for any agent session (read first)
 - **`TODO.md`** — living task tracker (must always be current — see doc 03 §10)
+
+**Process docs:** `docs/meta/` holds unnumbered process/meta documents
+(TODO task-state conventions, autonomous session protocol, doc-set audit
+archive). Numbering policy: product specs take numbers 21+, process docs
+stay unnumbered in `docs/meta/`.
+
+**Changelog:** `CHANGELOG.md` follows the Keep-a-Changelog format and is
+maintained alongside frequent commits.

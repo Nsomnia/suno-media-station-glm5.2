@@ -1,6 +1,6 @@
-**Phase 0 Kickoff Prompt (Literal, Paste-Ready)**
+# Phase 0 Kickoff Prompt (Literal, Paste-Ready)
 
-> **Last Updated:** 2024-01-01 · **Status:** Active
+> **Last Updated:** 2026-08-25 · **Status:** Active
 
 This is the literal prompt text to paste into the agentic coding harness
 (opencode + oh-my-openagent) to begin implementation. Paste as-is, or
@@ -34,6 +34,8 @@ anything else, read these files in full, in order:
     ~25k LOC spaghetti outcome; take this doc as seriously as doc 03)
 11. docs/19-git-workflow-and-repo-governance.md
 12. TODO.md
+13. docs/meta/session-protocol-autonomous-operation.md  (how "continue"
+    sessions run — daemon loop, stop conditions)
 
 Then execute Phase 0 exactly as scoped in docs/04-phase-roadmap.md's
 "Phase 0 — Foundation" section, in this order:
@@ -63,7 +65,7 @@ Then execute Phase 0 exactly as scoped in docs/04-phase-roadmap.md's
    entire visualizer architecture. Record the outcome — including the
    projectM build/packaging decision (system-installed vs. vendored via
    build.rs) — as a new ADR in docs/17.
-5. Build `Suno Station-app`: a themed, empty window with a left-nav shell
+5. Build `app/station-app`: a themed, empty window with a left-nav shell
    (sections can be placeholder/disabled for now) and a working
    theme-switcher proving the design-token pipeline works end to end.
 6. Build the `xtask` `check-layering` command per docs/18 §2.1.
@@ -99,5 +101,10 @@ Ground rules while you work:
 - You are not token-constrained in any meaningful sense here (free-tier
   model) — be thorough. Do not skip tests, skip the prior-art search, or
   skip a self-review pass to save effort.
+- CI exists (.github/workflows/ci.yml) — keep main green; every PR must
+  pass clippy/test/fmt jobs.
+
+Final step for every merged task: create/update CHANGELOG.md entries per
+Keep-a-Changelog.
 
 Begin with step 1.

@@ -1,6 +1,8 @@
-**Glossary & Architecture Decision Log (ADR)**
+# Glossary & Architecture Decision Log (ADR)
 
-**Glossary**
+> **Last Updated:** 2026-08-25 · **Status:** Active
+
+## Glossary
 
 - **Suno Station** — working project name (this app).
 - **Bridge crate** — a crate whose sole job is wrapping an external process/
@@ -17,13 +19,13 @@
 - **Take** — a locally recorded audio clip captured for potential upload to
   Suno.
 
-**ADR Log**
+## ADR Log
 
 Format: `ADR-NNN: Title — Status — Date`. Keep entries short; link to the doc
 section they amend if applicable. Add new entries as decisions are made or
 revisited during development — this is a living doc.
 
-**ADR-001: Native Rust UI over Tauri/web-hybrid**
+### ADR-001: Native Rust UI over Tauri/web-hybrid
 - **Status:** Accepted
 - **Context:** Needed a UI approach that integrates cleanly with a real-time
   projectM visualizer surface while remaining feasible for LLM-driven
@@ -33,7 +35,7 @@ revisited during development — this is a living doc.
 - **Consequence:** Visualizer texture compositing is native/wgpu-based, no
   cross-process/webview GL embedding problem to solve.
 
-**ADR-002: Cargo workspace of many small crates over monolith**
+### ADR-002: Cargo workspace of many small crates over monolith
 - **Status:** Accepted
 - **Context:** LLM code-gen performance benefits from small, single-purpose,
   well-named compile units.
@@ -42,13 +44,13 @@ revisited during development — this is a living doc.
 - **Consequence:** More Cargo.toml boilerplate, offset by clearer boundaries
   and independent testability.
 
-**ADR-003: File size caps — 300 line hard cap**
+### ADR-003: File size caps — 300 line hard cap
 - **Status:** Accepted
 - **Decision:** Soft cap ~150-200 lines, hard cap 300 lines per `.rs` file.
 - **Consequence:** Enforced via agent constitution (doc 03 §1) self-discipline;
   a future lint/CI check may automate this.
 
-**ADR-004: Plugin system deferred to stub-only**
+### ADR-004: Plugin system deferred to stub-only
 - **Status:** Accepted
 - **Decision:** `plugin-host-stub` crate holds trait definitions/no-op
   registry only; Rhai-scripting tier and later WASM tier are Phase 8 work
@@ -56,7 +58,7 @@ revisited during development — this is a living doc.
 - **Consequence:** Seam exists in the architecture now; no functional plugin
   execution until Phase 8.
 
-**ADR-005: Auth mechanism split by login type**
+### ADR-005: Auth mechanism split by login type
 - **Status:** Accepted
 - **Context:** Google/Facebook OAuth blocks embedded webview user-agents
   (`disallowed_useragent`); Electron/Qt-webview equivalents hit the same wall.
@@ -68,14 +70,14 @@ revisited during development — this is a living doc.
 - **Consequence:** Three auth-bridge crates instead of one unified webview
   approach; more code, but each path actually works for its login type.
 
-**ADR-006: LLM/image-gen adapters and plugin system are low-priority stubs**
+### ADR-006: LLM/image-gen adapters and plugin system are low-priority stubs
 - **Status:** Accepted
 - **Decision:** Both get trait-only scaffolding early if convenient, full
   implementation pushed to their designated late phases (doc 04 Phase 6/8).
 - **Consequence:** Early phases focus entirely on library/playback/
   visualizer/canvas/automation core value.
 
-**ADR-007: Suno API contract is capture-driven, not guessed**
+### ADR-007: Suno API contract is capture-driven, not guessed
 - **Status:** Accepted
 - **Decision:** doc 06 (Suno API integration contract) is populated
   incrementally from real Burp Suite traffic captures the human orchestrator
@@ -86,7 +88,7 @@ revisited during development — this is a living doc.
 
 ---
 
-**ADR-008: LLM Chat & Image-Gen priority moved earlier; explicit codebase-health gate added**
+### ADR-008: LLM Chat & Image-Gen priority moved earlier; explicit codebase-health gate added
 - **Status:** Accepted
 - **Context:** Prior C++/Qt prototype grew to ~25k LOC of spaghetti before
   these features were reached. Two causes identified: (1) feature work
@@ -110,3 +112,48 @@ revisited during development — this is a living doc.
      Gate audit** before Phase 6/7 begins.
 - **Consequence:** The agent must treat the Phase 5→6/7 boundary as a hard
   stop requiring an explicit audit pass, not a soft suggestion.
+
+---
+
+### ADR-009: Full-Surface Client scope adopted (incl. Phase 6b Creation Studio)
+- **Status:** Accepted
+- **Date:** 2026-08
+- **Context:** The orchestrator clarified the vision in August 2026: the app
+  is a listening AND creation front-end over the whole Suno API — not a
+  library/playback companion only.
+- **Decision:** Charter amended accordingly. No LOCAL generation is added;
+  server-side generation (submit job, poll status, upload audio) is driven
+  as a first-class client feature. Doc 04 gains Phase 6b (Creation Studio);
+  doc 06 gains endpoint categories 2.8–2.15.
+- **Consequence:** Supersedes the narrow reading of ADR-006 that kept
+  generation-adjacent work entirely out of early scope.
+
+### ADR-010: Auth model corrected to Clerk session-token exchange
+- **Status:** Accepted
+- **Date:** 2026-08
+- **Context:** Prototype recon shows Clerk deployed at `auth.suno.com/v1`;
+  the JWT (~1 h lifetime) is exchanged from the session cookie — not an
+  opaque refresh-cookie scheme as earlier docs assumed.
+- **Decision:** Docs 05 and 06 are corrected to describe the Clerk
+  session-token exchange. Capture-driven LEAD status for doc 06 is retained.
+- **Consequence:** suno-auth crates parse/exchange Clerk cookies rather
+  than inventing refresh endpoints.
+
+### ADR-011: TODO task-state marks + agent-mutates/user-only-removes ownership
+- **Status:** Accepted
+- **Date:** 2026-08
+- **Decision:** TODO.md uses ASCII state marks per
+  `docs/meta/TODO-task-state-conventions.md`. The agent may freely modify
+  TODO entries but never deletes completed rows; removal/archival is
+  reserved to the human orchestrator.
+- **Consequence:** doc 19 §7's inline structure template was replaced by a
+  pointer to that spec.
+
+### ADR-012: Doc-set audit round applied (Aug 2026)
+- **Status:** Accepted
+- **Date:** 2026-08
+- **Context/Decision:** A full doc-set audit round was approved and applied;
+  see `docs/meta/AUDIT-findings-and-recommendations.md` for the record of
+  approved corrections (mechanical fixes, bloat merges, infra adoption).
+- **Consequence:** The numbered docs reflect the audited state; future
+  audits append to the same archive rather than re-opening this ADR.

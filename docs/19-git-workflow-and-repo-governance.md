@@ -1,8 +1,8 @@
-**Git Workflow & Repository Governance**
+# Git Workflow & Repository Governance
 
-> **Last Updated:** 2024-01-01 · **Status:** Active
+> **Last Updated:** 2026-08-25 · **Status:** Active
 
-**1. Why This Matters Even With a Sole Human Orchestrator**
+## 1. Why This Matters Even With a Sole Human Orchestrator
 
 No human writes code here, but git history is still the project's
 permanent audit trail, rollback mechanism, and the primary artifact the
@@ -11,7 +11,7 @@ every task). Good git hygiene is therefore not bureaucratic overhead — it
 is the human's main lever for staying in control of an AI-authored
 codebase without reading every line.
 
-**2. Branching Model**
+## 2. Branching Model
 
 **Trunk-based, short-lived feature branches.** `main` is always expected
 to pass the CI bar (doc 16 §4) — nothing is merged that doesn't build,
@@ -30,7 +30,7 @@ lint clean, and pass tests.
 - Branches are deleted after merge (locally and remotely) to keep the
   branch list a true reflection of active work, not history.
 
-**3. Worktrees**
+## 3. Worktrees
 
 Use `git worktree` when working on more than one branch's checkout
 simultaneously is useful (e.g. the orchestrator harness running a
@@ -45,7 +45,7 @@ Phase-0-spike branch checked out separately from day-to-day Phase 1 work).
   fine for straightforward sequential work. Reach for a worktree
   specifically when genuine parallelism is happening.
 
-**4. Commit Conventions**
+## 4. Commit Conventions
 
 - **Conventional-commit-style prefixes:** `feat:`, `fix:`, `docs:`,
   `refactor:`, `test:`, `chore:`, `perf:` — enables clean changelog
@@ -57,7 +57,7 @@ Phase-0-spike branch checked out separately from day-to-day Phase 1 work).
   where a §9-style "inferred X, easily changed if wrong" note belongs when
   applicable.
 
-**5. Pull Requests — Used Even for Sole-Maintainer Merges**
+## 5. Pull Requests — Used Even for Sole-Maintainer Merges
 
 Every task-branch gets a PR opened via `gh pr create` before merging to
 `main`, even though the human orchestrator is typically the only reviewer/
@@ -100,7 +100,7 @@ Merge strategy: squash-merge (keeps `main`'s history clean and matches the
 genuinely contains multiple commits worth preserving individually (rare —
 prefer splitting into multiple PRs instead when that's the case).
 
-**6. `AGENTS.md` — Structure & Placement**
+## 6. `AGENTS.md` — Structure & Placement
 
 - **Root `AGENTS.md`** (template below) is the mandatory front-door file —
   every agent session should read it first, before diving into `docs/`.
@@ -115,43 +115,20 @@ prefer splitting into multiple PRs instead when that's the case).
   doc 18 §2.5-style drift risk by never having two files claim to be the
   source of truth for the same fact.
 
-**7. `TODO.md` — Structure & Update Discipline**
+## 7. `TODO.md` — Structure & Update Discipline
 
-Root-level, single file (not per-crate — a scattered multi-file TODO
-system defeats the "one place to look" purpose). Structure:
+TODO.md's structure, state marks, and ownership rules are defined in
+`docs/meta/TODO-task-state-conventions.md` (ADR-011).
 
-```markdown
-**TODO**
+State marks legend: `[ ]` todo · `[~]` doing · `[!]` blocked · `[?]` needs
+you · `[x]` done-awaiting-your-verification · `[X]` verified-locked · `[-]`
+cancelled.
 
-> Updated at the start/end of every work session — see docs/03 §10.
-> Current phase: <Phase N — name> (docs/04-phase-roadmap.md)
+The single hardest rule, restated: the agent updates TODO.md freely but
+NEVER deletes rows — removal/archival of completed tasks is the human
+orchestrator's exclusive act.
 
-**In Progress**
-- [ ] <task> — branch: `phase-N/...` — <one-line status>
-
-**Up Next (this phase)**
-- [ ] <task, mirrors the phase doc's remaining exit-criteria items>
-
-**Blocked / Needs Human Input**
-- [ ] <task> — blocked on: <e.g. "needs a Burp capture of endpoint X, see doc 06">
-
-**Recently Completed (rolling short list, not full history — git log is history)**
-- [x] <task> — PR #<n>
-```
-
-Rules:
-- **Never let "In Progress" contain a stale entry** — if a session ends
-  mid-task, the entry stays with an honest status note; if it's actually
-  done, it moves to "Recently Completed" with its PR link, immediately.
-- "Blocked / Needs Human Input" is the primary channel for surfacing
-  doc-03-§9-style stop-and-ask items and doc-06-style capture requests —
-  the human should be able to open just this file and know exactly what's
-  waiting on them.
-- Keep "Recently Completed" short (e.g. last 10-15 items) — prune older
-  entries; they remain fully discoverable via `git log`/merged PRs, this
-  section is a quick-glance convenience only, not an archive.
-
-**8. Tags & Releases (lightweight policy for now)**
+## 8. Tags & Releases (lightweight policy for now)
 
 Full release engineering is intentionally deferred (per original project
 scope decision), but a minimal placeholder policy avoids total ambiguity:
@@ -163,7 +140,7 @@ scope decision), but a minimal placeholder policy avoids total ambiguity:
   semver policy and changelog generation at that point via an ADR (doc
   17), rather than deciding it speculatively now.
 
-**9. `.gitignore` Baseline (Phase 0 task)**
+## 9. `.gitignore` Baseline (Phase 0 task)
 
 Ensure standard Rust (`/target`, `Cargo.lock` handling — commit
 `Cargo.lock` for a binary/application project, which this is, per Cargo's
