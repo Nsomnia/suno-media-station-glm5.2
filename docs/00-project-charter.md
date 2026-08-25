@@ -1,6 +1,8 @@
-# **Project Charter — "Suno Station" (working name)**
+# Project Charter — "Suno Station" (working name)
 
-## **1. Vision**
+> **Last Updated:** 2026-08-25 · **Status:** Active
+
+## 1. Vision
 
 Suno Station is a native, Rust-built desktop companion to Suno.com that gives power users
 capabilities the official web/mobile clients don't offer — full remote library control,
@@ -10,11 +12,15 @@ overlays, keyframe animation, an automation pipeline for batch-producing content
 scale, and a long-horizon path toward a built-in lightweight DAW for recording source
 audio destined for Suno.
 
+Suno Station is a full-surface listening AND creation front-end for Suno.com — every
+user-facing capability the Suno API exposes is interactable from the app, plus local-only
+add-on features (visualizer videos, karaoke, recording).
+
 Suno Station is *not* a Suno replacement or a music generation engine. It is a control-plane
 and creative-production layer built on top of Suno's remote data plus local media
 tooling.
 
-## **2. Product Pillars**
+## 2. Product Pillars
 
 1. **Remote Library Mastery** — everything the official client can do to a user's Suno
    library, done faster, in bulk, and across multiple accounts.
@@ -33,11 +39,15 @@ tooling.
    OpenAI-compatible/ComfyUI-style servers. Not core-path early work.
 7. **Extensibility** — plugin system (scripting first, WASM later) so end users can
    extend effects/automation without a Suno Station release.
+8. **Full-Surface Client** — drive every user-facing Suno capability (library, playlists,
+   personas, generation via Suno's own server-side endpoints, uploads, account surfaces)
+   from one desktop app, managed better than the official clients.
 
-## **3. Non-Goals (explicit, revisit only via ADR)**
+## 3. Non-Goals (explicit, revisit only via ADR)
 
-- Suno Station does **not** implement music generation. It is a client/production tool
-  around Suno's generated audio.
+- Suno Station does **not** implement music generation *locally* — song creation always
+  happens server-side via Suno's own API, which Station drives as a first-class client
+  feature. No local AI audio/diffusion inference.
 - Suno Station does **not** attempt to be a full multitrack DAW at v1. Recording is
   "capture a take for upload to Suno," not "produce an album." JUCE-equivalent DAW
   work is an explicit late-phase stretch goal (Phase 9), not core scope.
@@ -50,7 +60,7 @@ tooling.
 - No cloud backend of our own. Suno Station is a local-first desktop app; any server-side
   component (if ever needed for OAuth relay) is minimal and documented separately.
 
-## **4. Target Users**
+## 4. Target Users
 
 - **Primary:** Suno power users producing many tracks who want faster library
   ops, better lyric/karaoke handling, and shareable visualizer videos.
@@ -59,13 +69,13 @@ tooling.
 - **Tertiary:** Multi-account jugglers (agencies managing several client Suno
   accounts) needing fast account switching.
 
-## **5. Platform Targets**
+## 5. Platform Targets
 
 Windows, macOS, Linux — desktop parity from day one where feasible. If a phase's
 work is genuinely platform-blocked (e.g., a webview quirk), document the gap in that
 phase's spec rather than silently dropping a platform.
 
-**6. Technology Spine (see 01-architecture-overview.md for detail)**
+## 6. Technology Spine (see 01-architecture-overview.md for detail)
 
 - **Language:** Rust, workspace-of-crates.
 - **UI:** native Rust GUI (egui or iced — decision recorded in 01), no Electron/web
@@ -82,7 +92,7 @@ phase's spec rather than silently dropping a platform.
   harness (opencode + oh-my-openagent/"sysaphus" orchestrator), with the human as
   orchestrator/reviewer, not line-by-line author. See 03-agent-constitution.md.
 
-## **7. Definition of "Done" for the Project (north star, not a v1 checklist)**
+## 7. Definition of "Done" for the Project (north star, not a v1 checklist)
 
 A user can: log into 1+ Suno accounts (any auth method), browse/search/bulk-manage
 their remote library, download tracks locally with full local playback parity,
@@ -92,7 +102,7 @@ that manual recipe into an automation pipeline and batch-render hundreds of vide
 unattended — all inside one native, fast, good-looking (Catppuccin/Monokai-themed,
 glass-panel) desktop app.
 
-## **8. How These Docs Are Used**
+## 8. How These Docs Are Used
 
 This doc set is the **master set of truths** for the project. Every subsequent
 prompt handed to the coding agent should reference the relevant doc(s) by filename

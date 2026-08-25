@@ -1,4 +1,6 @@
-**Ideas Backlog**
+# Ideas Backlog
+
+> **Last Updated:** 2026-08-25 · **Status:** Active
 
 A running log of good ideas surfaced during development that are
 explicitly OUT of current scope (per doc 03 §8's scope-discipline rule).
@@ -9,7 +11,7 @@ actual phase/doc update.
 
 Format: `- [ ] <idea> — (surfaced during: <phase/task>, date if useful)`
 
-**Parked Ideas**
+## Parked Ideas
 
 - [ ] Auto-upload recorded takes (Phase 2) directly to a Suno project —
       deferred, Phase 2 is capture-and-save-locally only.
@@ -35,8 +37,13 @@ Format: `- [ ] <idea> — (surfaced during: <phase/task>, date if useful)`
       desktop-first app (doc 08 §5).
 - [ ] Full screen-reader accessibility support — stretch goal, not a v1
       blocker given current egui maturity (doc 08 §8).
+- [ ] Heuristic lyric-aligner fallback tier (cheap local alignment of plain
+      lyrics when remote timing is absent but timing is desired — sits between
+      remote timing and full Whisper runs in the karaoke resolution chain) —
+      (surfaced during: audit round 2026-08, predecessor prototype had working
+      LyricsSync heuristic aligner).
 
-**Review Log**
+## Review Log
 
 *(Populated as backlog reviews happen — empty at doc-set creation.)*
 

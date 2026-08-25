@@ -1,11 +1,13 @@
-**Architecture Overview**
+# Architecture Overview
 
-**1. High-Level Shape**
+> **Last Updated:** 2026-08-25 · **Status:** Active
+
+## 1. High-Level Shape
 
 ```
 
 ┌─────────────────────────────────────────────────────────────────┐
-│                         Suno Station-app (bin)                  │
+│                         station-app (bin)                       │
 │   native shell window, routing, top-level app state             │
 └───────────────┬───────────────────────────────┬─────────────────┘
                 │                               │
@@ -28,7 +30,7 @@
 
 ```
 
-**2. Guiding Architectural Principles**
+## 2. Guiding Architectural Principles
 
 1. **Crate = capability boundary.** Every crate has ONE clear job and a small,
    deliberate public API (its `lib.rs`). If you can't summarize a crate's purpose
@@ -52,7 +54,7 @@
 7. **No God Objects.** No "AppState" mega-struct holding everything. Composition
    at the top-level binary wires narrow-interface handles together.
 
-**3. Layered Crate Map (see 02-workspace-layout.md for the literal directory tree)**
+## 3. Layered Crate Map (see 02-workspace-layout.md for the literal directory tree)
 
 - **Layer 0 — Foundation:** error/result conventions, config loading, logging/
   tracing setup, design-token theme definitions.
@@ -75,17 +77,23 @@ Dependencies only ever point downward (Layer 4 → 3 → 2 → 1 → 0). This is
 socially/via code review checklist for now; a `cargo-deny`/custom lint check to
 enforce it mechanically is a nice-to-have backlog item, not a blocker.
 
-**4. UI Framework Decision — RECORDED**
+## 4. UI Framework Decision
 
 **Chosen: native Rust GUI**, immediate path = `egui` unless the agent's early
 prototyping phase surfaces a hard blocker, in which case `iced` is the fallback
 (both are pre-approved; pick during Phase 0 spike, document the choice + reasoning
 as an ADR — see doc 17). Rationale for leading with `egui`: simpler mental model
 for an LLM-driven, many-small-files codebase (immediate-mode = less hidden
-state-machine complexity to keep consistent across files), mature `wgpu` backend
-(needed for compositing projectM's GL/wgpu output as a texture into the same
-frame), and existing Catppuccin theme crate (`catppuccin-egui`) to bootstrap
-theming quickly.
+state-machine complexity to keep consistent across files), and an existing Catppuccin
+theme crate (`catppuccin-egui`) to bootstrap theming quickly.
+
+The renderer-backend choice — `egui` + `glow` (OpenGL) versus `egui` + `wgpu` — is
+explicitly open and must be decided by the Phase 0 spike. Rationale: projectM renders
+OpenGL, so an egui+glow backend allows same-GL-context compositing of visualizer frames
+(dramatically simpler interop; precedent: the predecessor prototype composited GL FBOs
+in the same context), whereas egui+wgpu requires cross-API texture sharing, which is
+feasible but higher-risk. Both are acceptable outcomes; whichever is chosen must be
+recorded as an ADR (doc 17).
 
 Custom bolted-on interface surfaces (e.g., a heavier web-tech canvas editor) are
 explicitly allowed **later**, as an opt-in embedded surface for one specific
@@ -93,7 +101,7 @@ screen, never as a replacement for the native shell. Any such addition requires
 its own ADR justifying why native widgets were insufficient for that specific
 screen.
 
-**5. Visualizer Integration Model**
+## 5. Visualizer Integration Model
 
 `visualizer-projectm-bridge` wraps projectM's C API via `bindgen`/FFI, renders
 into an offscreen texture (or shares a GL/wgpu context, backend-dependent — a
@@ -104,7 +112,7 @@ elements (text/graphics/keyframed animations) on top of that texture each frame.
 Export (one-off or pipeline/batch) walks frames headlessly (not tied to the live
 UI framerate) and pipes raw frames to `video-export-ffmpeg`.
 
-**6. Lyrics/Karaoke Data Flow**
+## 6. Lyrics/Karaoke Data Flow
 
 ```
 
@@ -128,7 +136,7 @@ Remote timing is always the default/preferred source when present; local Whisper
 is an *enhancement or fallback*, never a silent overwrite — the lyrics editor UI
 must make the source (and any manual edits) visible/attributable.
 
-**7. Automation Pipeline Model**
+## 7. Automation Pipeline Model
 
 A pipeline is a serialized recipe: input selection (which tracks/library filter),
 a scene/template reference (canvas design + keyframes), lyric-source policy,
@@ -139,7 +147,7 @@ duplicate render logic**; it only fans out the same single-track render service
 across many inputs with concurrency limits and resumability (crash mid-batch →
 resume, don't restart from zero).
 
-**8. Multi-Account Model**
+## 8. Multi-Account Model
 
 `account-store` holds N credential profiles (each: display name, auth method,
 opaque secret handle into OS keyring, cached profile metadata). Exactly one
@@ -148,7 +156,7 @@ Suno API client is parameterized by account, so power users switching frequently
 is a cheap operation (swap the active credential handle, re-key cached library
 views), not a re-login.
 
-**9. Plugin System — Current Phase Status**
+## 9. Plugin System — Current Phase Status
 
 Per current decision, this is **scaffolded only**: a `plugin-host-stub` crate
 exists with the trait definitions and a no-op registry, but no scripting engine

@@ -1,8 +1,13 @@
-**§0. Phasing Is a Guide, Not a Blind Queue — Core Maintainability Gate**
+# Phase Roadmap
 
-Phases 0-5 constitute **"Core."** Phases 6 (LLM Creative Integrations) and 7
-(Automation Pipelines) are **not allowed to begin** until Core passes the
-**Core Maintainability Gate** defined in `docs/18-codebase-health-guardrails.md`.
+> **Last Updated:** 2026-08-25 · **Status:** Active
+
+## §0. Phasing Is a Guide, Not a Blind Queue — Core Maintainability Gate
+
+Phases 0-5 constitute **"Core."** Phases 6 (LLM Creative Integrations), 6b
+(Suno Creation Studio), and 7 (Automation Pipelines) are **not allowed to
+begin** until Core passes the **Core Maintainability Gate** defined in
+`docs/18-codebase-health-guardrails.md`.
 This is a deliberate, named checkpoint — not implicit — specifically because
 the predecessor C++/Qt project reached ~25k LOC of unmaintainable spaghetti
 by the time it got this far, and LLM-integration features were part of what
@@ -10,13 +15,13 @@ got bolted on under that decay (see ADR-008). We are not repeating that.
 
 Order of Core phases (0→5) stays sequential as written below. What's
 flexible is what happens **after** Core: once the Gate passes, the human
-orchestrator chooses whether Phase 6 (LLM/image-gen) or Phase 7
-(Automation) goes next based on product priority at that time — both are
-equally "unlocked," neither is forced to wait on the other.
+orchestrator chooses whether Phase 6 (LLM/image-gen), Phase 6b (Creation
+Studio), or Phase 7 (Automation) goes next based on product priority at that
+time — all three are equally "unlocked," none is forced to wait on the others.
 
 ---
 
-**Phase Roadmap — Entry/Exit Criteria**
+## Phase Roadmap — Entry/Exit Criteria
 
 Each phase below lists: **Goal**, **Primary crates touched/created** (paths per
 doc 02), **Entry criteria** (must be true before starting), **Exit criteria**
@@ -33,7 +38,7 @@ arc.
 
 ---
 
-**Phase 0 — Foundation**
+## Phase 0 — Foundation
 
 **Goal:** A compiling, running, empty-but-structurally-complete app shell with
 theming, logging, config, and the full workspace skeleton in place.
@@ -58,22 +63,23 @@ theming, logging, config, and the full workspace skeleton in place.
 - Egui-vs-iced spike decision made and recorded as an ADR (doc 17) if it
   wasn't already obviously egui.
 
-**Risks/spikes:** Confirming projectM's rendering approach *can* share a
-texture with the chosen UI framework's renderer — do a minimal spike (even
-just rendering a solid-color quad from a separate GL/wgpu context into an
-egui texture) before committing further, since this is the architecture's
-riskiest integration point. If this spike reveals a hard blocker, resolve it
-here, not in Phase 4.
+**Risks/spikes:** Per audit C-4/C-3, the compositing spike mandate is widened:
+it must evaluate BOTH (a) egui+glow same-context compositing of a
+projectM-rendered frame AND (b) egui+wgpu cross-API texture sharing, before
+any renderer-backend commitment is made (see doc 01 §4). The spike must also
+probe glassmorphism feasibility — true backdrop-blur vs the Tier-B translucent
+fallback per doc 08 §3. Record the outcome as an ADR (doc 17). If this spike
+reveals a hard blocker, resolve it here, not in Phase 4.
 
 **Non-goals:** No real Suno connectivity, no real audio, no real visualizer
 output yet — this phase is purely scaffolding + the compositing spike.
 
 ---
 
-**Phase 1 — Suno Core (Accounts, Auth, Remote Library, Downloads)**
+## Phase 1 — Suno Core (Accounts, Auth, Remote Library, Downloads)
 
 **Goal:** Full multi-account Suno auth, and the ability to browse/search the
-remote library and download tracks locally.
+remote library (tracks and playlists) and download tracks locally.
 
 **Crates:**
 - `external-bridges/suno-http-client-core`
@@ -107,6 +113,9 @@ Suno login + library-list + track-detail flow provided by the human (see doc
 - Download manager can queue and complete downloads of remote tracks to a
   local folder, tracked in `local-download-manager-store`, with resumable/
   retryable behavior on failure.
+- Playlist browsing/management works: the user can list their playlists,
+  view a playlist's tracks, create/rename/trash a playlist, and add/remove
+  clips — built from doc 06 §2.9 leads once captured.
 - Token refresh (for the manual/webview paths) is handled automatically when
   a request 401s, without forcing re-login, where Suno's API supports it —
   document in doc 06 if it doesn't and a manual re-auth is required instead.
@@ -121,7 +130,7 @@ maybe a bare "play in system default app" stopgap). No lyrics handling yet.
 
 ---
 
-**Phase 2 — Local Playback Parity + Basic Recording**
+## Phase 2 — Local Playback Parity + Basic Recording
 
 **Goal:** Local files downloaded in Phase 1 play back with a full-featured
 player UI indistinguishable in capability from browsing remote (queue,
@@ -143,7 +152,8 @@ tracks available for testing playback.
 
 **Exit criteria:**
 - Local library browser plays local files with standard transport controls,
-  queue management, and volume, matching what the remote browser's "preview
+  queue management (including a shuffle toggle and repeat modes: off/all/one),
+  and volume, matching what the remote browser's "preview
   play" offers (so switching between remote-preview and local-file playback
   feels the same to the user).
 - Recording studio screen can select an input device, record a take, and
@@ -157,7 +167,7 @@ to Suno yet (log it in `99-ideas-backlog.md` if tempting to add early).
 
 ---
 
-**Phase 3 — Lyrics / Karaoke Data**
+## Phase 3 — Lyrics / Karaoke Data
 
 **Goal:** Timed lyrics pulled from Suno where available, enhanced/aligned
 locally via Whisper where needed, editable in a dedicated UI.
@@ -169,9 +179,9 @@ locally via Whisper where needed, editable in a dedicated UI.
 - `ui/ui-screen-lyrics-editor`
 
 **Entry criteria:** Phase 1 (remote data access) and Phase 2 (local audio
-access) done; a Burp capture of Suno's timed-lyrics endpoint (if one exists
-and is discoverable) provided — if Suno truly has no such endpoint, this
-phase leans entirely on Whisper and doc 06 should say so explicitly.
+access) done; a confirming capture of the aligned-lyrics endpoint
+(`GET /api/gen/{id}/aligned_lyrics/v2/`, known from recon per doc 06 §2.4)
+provided.
 
 **Exit criteria:**
 - For a track with Suno-provided timed lyrics, the app displays them
@@ -190,7 +200,7 @@ phase leans entirely on Whisper and doc 06 should say so explicitly.
 
 ---
 
-**Phase 4 — Visualizer (projectM)**
+## Phase 4 — Visualizer (projectM)
 
 **Goal:** Live audio-reactive visualizer preview inside the app, plus a
 first one-off render-to-video pipeline via ffmpeg (no overlay/canvas yet —
@@ -226,7 +236,7 @@ automation yet (Phase 7).
 
 ---
 
-**Phase 5 — Canvas Overlay + Keyframe System**
+## Phase 5 — Canvas Overlay + Keyframe System
 
 **Goal:** A design canvas for placing text/graphic elements over the
 visualizer output, with a keyframe animation system and a small built-in
@@ -263,7 +273,7 @@ batch automation yet (Phase 7).
 
 ---
 
-**Phase 6 — LLM Creative Integrations**
+## Phase 6 — LLM Creative Integrations
 
 **Goal:** Optional, pluggable text-LLM (lyric ideation) and image-gen (cover/
 brand art) assist features, as adapters over remote APIs or a local
@@ -295,7 +305,40 @@ others additive later.
 
 ---
 
-**Phase 7 — Automation Pipelines**
+## Phase 6b — Suno Creation Studio
+
+**Goal:** Drive Suno's server-side creation features from the app — submit
+generations and poll them to completion, Suno-native lyric tools, persona
+selection, upload-a-take→create-song flow, credit-aware spending display.
+This is the "creation front-end" half of the Full-Surface Client pillar
+(doc 00).
+
+**Crates:**
+- `external-bridges/suno-generation-client`
+- `external-bridges/suno-upload-client`
+- `domain-stores/generation-job-store`
+- `ui/ui-screen-creation-studio`
+
+**Entry criteria:** Core Maintainability Gate passed (doc 18 §4) — unlocked
+alongside Phases 6/7 per doc 04 §0; plus confirming captures for doc 06 §2.8
+(generation) and §2.11 (uploads).
+
+**Exit criteria:**
+- User can submit a generation (prompt/style/persona/instrumental toggles as
+  the captured API allows), watch job status poll to completion, and see
+  resulting clips land in the library cache.
+- Lyric-generation assist works end-to-end.
+- Upload flow takes a locally recorded take through initialize/upload-finish/
+  poll to produce a usable clip.
+- Current credit balance is fetched and shown before any spend-confirm dialog.
+
+**Non-goals:** No local generation/inference; no purchase/checkout flows
+(billing read-only, doc 06 §2.13); no bulk auto-generation until the Phase 7
+pipeline step exists.
+
+---
+
+## Phase 7 — Automation Pipelines
 
 **Goal:** Turn a manually-dialed-in single-track recipe (scene + lyric policy
 + export settings) into a saved pipeline that batch-processes many tracks
@@ -327,7 +370,7 @@ step types are a fixed, built-in set for now.
 
 ---
 
-**Phase 8 — Plugin System**
+## Phase 8 — Plugin System
 
 **Goal:** Promote `plugin-host-stub` into a working scripting-based plugin
 system (Rhai preferred per doc 03/doc 11), letting users author custom canvas
@@ -355,7 +398,7 @@ plugin loading is sufficient for this phase.
 
 ---
 
-**Phase 9 — DAW Evolution**
+## Phase 9 — DAW Evolution
 
 **Goal:** Grow the Phase 2 basic recorder toward a lightweight multitrack
 digital audio workstation sufficient for producing source audio for Suno
