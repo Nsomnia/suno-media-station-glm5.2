@@ -2,6 +2,10 @@
 # duplicate-version policy later.
 
 [licenses]
+# Internal workspace crates are unpublished (publish = false, "UNLICENSED")
+# and are not valid SPDX expressions by design — skip license gating for
+# private crates; third-party dependencies must satisfy the allowlist.
+private = { ignore = true }
 allow = [
   "MIT",
   "Apache-2.0",
