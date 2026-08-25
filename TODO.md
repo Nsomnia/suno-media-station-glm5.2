@@ -33,9 +33,15 @@
 ## Blocked / Needs Human Input
 
 - [!] Meaningful Phase 1 work on suno-http-client-core — blocked on: fresh confirming capture of Clerk auth flow + library listing (leads exist from prototype recon; see docs/meta/suno-api-ground-truth-from-prototype.md §2–3)
-- [?] Audit decisions: approve/reject/modify items in docs/meta/AUDIT-findings-and-recommendations.md (esp. scope items S-1 creation-front-end charter amendment and S-3 Phase 6b Suno Creation Studio)
 
 ## Awaiting Your Verification (agent says done; confirm → remove or lock)
+
+- [x] Audit decisions resolved: user approved ALL items in
+      docs/meta/AUDIT-findings-and-recommendations.md (confirmed in-session
+      2026-08-25; decision boxes already marked and approved changes were
+      applied in commits 84b5375 + e7e6a9d). Remaining follow-up when
+      convenient: reduce docs/meta/ per its README checklist (archive the
+      audit file as a living-docs cleanup).
 
 - [x] Full planning doc set authored — verify by reading docs/README.md hub + spot-checking any two docs
 - [x] Chat-export extraction completed; all 33 blocks landed as files with per-doc commits — verify via `git log --oneline`
