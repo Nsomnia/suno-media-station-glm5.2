@@ -29,7 +29,7 @@ endpoints, uploads, account surfaces) from one desktop app, managed better
 than the official clients." Generation always happens server-side at Suno;
 Station is the better remote control.
 
-**Decision:** [ ] Approve   [ ] Reject   [ ] Modify: ________
+**Decision:** [X] Approve   [ ] Reject   [ ] Modify: ________
 
 ### S-2 · Doc 06 endpoint categories miss entire API surfaces
 
@@ -42,7 +42,7 @@ read-back, omnisearch. Full seeding map:
 **Recommendation:** Add doc 06 categories 2.8–2.15, each seeded with
 provenance-tagged leads (status `LEAD — needs confirming capture`).
 
-**Decision:** [ ] Approve   [ ] Reject   [ ] Modify: ________
+**Decision:** [x] Approve   [ ] Reject   [ ] Modify: ________
 
 ### S-3 · Roadmap has no Creation phase
 
@@ -58,7 +58,7 @@ picker, upload-a-take → create-song flow (`/api/uploads/audio/*`), credit
 balance display before spends. A "generate tracks" pipeline step becomes a
 Phase 7 additive extension.
 
-**Decision:** [ ] Approve   [ ] Reject   [ ] Modify: ________
+**Decision:** [x] Approve   [ ] Reject   [ ] Modify: ________
 
 ### S-4 · Listening-parity gaps vs prototype feature set
 
@@ -71,7 +71,7 @@ criteria; (b) add playlist browsing/management to Phase 1 scope (endpoints
 exist; ground-truth doc §3); (c) park "heuristic aligner fallback (cheaper
 than Whisper when plain lyrics exist but no timing)" in doc 99.
 
-**Decision:** [ ] Approve   [ ] Reject   [ ] Modify: ________
+**Decision:** [x] Approve   [ ] Reject   [ ] Modify: ________
 
 ### S-5 · Batch rendering ignores hardware-accelerated encode
 
@@ -83,7 +83,7 @@ encoder selection.
 (`h264_videotoolbox` / `h264_nvenc` / `h264_qsv` / `libx264` fallback chain);
 doc 09 notes ffmpeg encoder availability must be probed at startup.
 
-**Decision:** [ ] Approve   [ ] Reject   [ ] Modify: ________
+**Decision:** [x] Approve   [ ] Reject   [ ] Modify: ________
 
 ---
 
@@ -103,7 +103,7 @@ doc 09 notes ffmpeg encoder availability must be probed at startup.
 | E-10 | Root `Cargo.toml` | `edition = "2021"` stale for an Aug-2026 greenfield scaffold | `edition = "2024"` |
 | E-11 | `.gitignore` | Missing doc 19 §9 items (`.DS_Store`, `Thumbs.db`, `*.local.toml`, editor dirs) | Add |
 
-**Decision (E block):** [ ] Approve all   [ ] Modify per-item: ________
+**Decision (E block):** [x] Approve all   [ ] Modify per-item: ________
 
 ---
 
@@ -122,7 +122,7 @@ exchange) and §2 (manual paste captures `__client` + `__session`, then performs
 the exchange itself). Seed doc 06 §2.1 accordingly. Capture-driven rule stays:
 these are leads until one fresh capture confirms each.
 
-**Decision:** [ ] Approve   [ ] Reject   [ ] Modify: ________
+**Decision:** [x] Approve   [ ] Reject   [ ] Modify: ________
 
 ### C-2 · Word-level timed lyrics confirmed to exist (HIGH)
 
@@ -134,7 +134,7 @@ Doc 04 Phase 3 hedges "if Suno truly has no such endpoint." Ground truth:
 hedge with "known from recon — confirm shape via fresh capture." Doc 07 §5's
 schema already fits word/line levels unchanged.
 
-**Decision:** [ ] Approve   [ ] Reject   [ ] Modify: ________
+**Decision:** [x] Approve   [ ] Reject   [ ] Modify: ________
 
 ### C-3 · Glassmorphism feasibility in egui is unproven (RISK)
 
@@ -148,7 +148,7 @@ Tier B translucent-fill-without-blur (always achievable). Theme tokens already
 model alpha separately, so Tier B is a token-value change, not a redesign.
 Record outcome in the Phase 0 ADR.
 
-**Decision:** [ ] Approve   [ ] Reject   [ ] Modify: ________
+**Decision:** [x] Approve   [ ] Reject   [ ] Modify: ________
 
 ### C-4 · projectM↔wgpu texture sharing is the riskiest unknown; glow path unstudied (RISK)
 
@@ -163,7 +163,7 @@ Qt/GL FBOs).
 (egui+wgpu, texture interop), pick by evidence, record ADR. Do not pre-commit
 wgpu in doc 01 §4 before the spike.
 
-**Decision:** [ ] Approve   [ ] Reject   [ ] Modify: ________
+**Decision:** [x] Approve   [ ] Reject   [ ] Modify: ________
 
 ### C-5 · Smaller technical-hygiene notes (LOW, batch)
 
@@ -177,7 +177,7 @@ wgpu in doc 01 §4 before the spike.
 - whisper-rs / keyring maintenance re-check notes belong at phase start (docs
   already genericize this; no change).
 
-**Decision:** [ ] Approve   [ ] Reject   [ ] Modify: ________
+**Decision:** [x] Approve   [ ] Reject   [ ] Modify: ________
 
 ---
 
@@ -191,7 +191,7 @@ wgpu in doc 01 §4 before the spike.
 | B-4 | Doc 19 §7 TODO structure conflicts with new state-mark spec | Replace section with pointer to `docs/meta/TODO-task-state-conventions.md` |
 | B-5 | Doc 11 kept stub-only (correct) | No change — listed to confirm it was considered, not overlooked |
 
-**Decision (B block):** [ ] Approve all   [ ] Modify per-item: ________
+**Decision (B block):** [x] Approve all   [ ] Modify per-item: ________
 
 ---
 
@@ -206,7 +206,7 @@ unpolished.
 **Recommendation:** Convert every numbered doc to ATX headings in one
 mechanical pass.
 
-**Decision:** [ ] Approve   [ ] Reject   [ ] Modify: ________
+**Decision:** [x] Approve   [ ] Reject   [ ] Modify: ________
 
 ### T-2 · Apply the Last-Updated header convention uniformly
 
@@ -216,7 +216,7 @@ dates). Either apply everywhere or drop the convention.
 **Recommendation:** Apply everywhere during the T-1 pass (real dates),
 exempting `AGENTS.md`/`TODO.md` as §13 already does.
 
-**Decision:** [ ] Approve   [ ] Reject   [ ] Modify: ________
+**Decision:** [x] Approve   [ ] Reject   [ ] Modify: ________
 
 ### T-3 · Numbering policy going forward
 
@@ -224,7 +224,7 @@ Keep existing numbers stable (all cross-references survive). New process/
 meta docs live in `docs/meta/` without numbers. New product specs take next
 free numbers (21+) and get README-index rows.
 
-**Decision:** [ ] Approve   [ ] Reject   [ ] Modify: ________
+**Decision:** [x] Approve   [ ] Reject   [ ] Modify: ________
 
 ### T-4 · Unspecified surfaces worth one short spec each
 
@@ -232,7 +232,7 @@ Global search (mentioned doc 08 §5 but never specified) and the settings-
 screen inventory (scattered across five docs) each deserve a compact section
 in doc 08 rather than new docs.
 
-**Decision:** [ ] Approve   [ ] Reject   [ ] Modify: ________
+**Decision:** [x] Approve   [ ] Reject   [ ] Modify: ________
 
 ---
 
@@ -259,4 +259,4 @@ adopt them:
   chores may commit directly to `main` without a PR (matches observed planning
   practice; code changes keep the PR requirement).
 
-**Decision (A block):** [ ] Approve all   [ ] Modify per-item: ________
+**Decision (A block):** [x] Approve all   [ ] Modify per-item: ________
