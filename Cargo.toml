@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
 members = [
-    "app/Suno Station-app",
+    "app/station-app",
 
     "crates/foundation/error-and-result-conventions",
     "crates/foundation/app-configuration-loader",
@@ -58,10 +58,12 @@ members = [
 ]
 
 [workspace.package]
-edition = "2021"
+edition = "2024"
 license = "UNLICENSED"
 publish = false
 
+# NOTE: pin exact versions once Phase 0 dependency selection is finalized.
+# Placeholder ranges above are a starting point, not a locked decision.
 [workspace.dependencies]
 tokio = { version = "1", features = ["full"] }
 serde = { version = "1", features = ["derive"] }
@@ -72,5 +74,3 @@ chrono = { version = "0.4", features = ["serde"] }
 uuid = { version = "1", features = ["v4", "serde"] }
 secrecy = { version = "0.8", features = ["serde"] }
 
-**NOTE: pin exact versions once Phase 0 dependency selection is finalized.**
-**Placeholder ranges above are a starting point, not a locked decision.**

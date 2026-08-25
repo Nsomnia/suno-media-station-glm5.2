@@ -6,5 +6,5 @@ license.workspace = true
 publish.workspace = true
 
 [dependencies]
-**Add only what this crate's ONE job actually needs.**
-**Prefer workspace.dependencies entries where applicable.**
+# Add only what this crate's ONE job actually needs.
+# Prefer workspace.dependencies entries where applicable.
