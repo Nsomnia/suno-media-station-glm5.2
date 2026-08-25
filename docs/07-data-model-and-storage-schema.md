@@ -1,6 +1,8 @@
-**Data Model & Storage Schema**
+# Data Model & Storage Schema
 
-**1. General Conventions (apply to every store crate)**
+> **Last Updated:** 2026-08-25 · **Status:** Active
+
+## 1. General Conventions (apply to every store crate)
 
 - **Engine:** SQLite via `sqlx` (compile-time checked queries where
   practical). Each store crate owns exactly one logical set of tables and
@@ -36,7 +38,7 @@
   proper relational columns on data that's actually structured/queried
   (e.g., don't JSON-blob an account's display name).
 
-**2. `account-profile-store`**
+## 2. `account-profile-store`
 
 ```sql
 CREATE TABLE accounts (
@@ -58,7 +60,7 @@ Note: `is_active` uniqueness is enforced in the store crate's Rust logic
 unique indexes could do this but the extra complexity isn't worth it for a
 single-row toggle at this scale.
 
-**3. `suno-remote-library-cache-store`**
+## 3. `suno-remote-library-cache-store`
 
 ```sql
 CREATE TABLE remote_tracks (
@@ -91,7 +93,22 @@ is what makes later schema evolution (Suno adds a field we now care about)
 cheap — read it out of already-cached `raw_metadata_json` instead of
 re-fetching everything.
 
-**4. `local-download-manager-store`**
+Per-account **feed sync state**: Suno's feed endpoint is cursor-based (per
+doc 06 §2.2), so each account needs its persisted sync cursor to resume/
+continue pagination across sync runs. The simple version is chosen: a tiny
+dedicated table rather than extra columns on the `accounts` row — it keeps
+sync mechanics out of the profile store's concern and extends trivially if
+more than one feed cursor is ever needed.
+
+```sql
+CREATE TABLE account_sync_state (
+    account_id  TEXT PRIMARY KEY REFERENCES accounts(id),
+    next_cursor TEXT,               -- null = no sync performed yet / start from beginning
+    synced_at   TEXT NOT NULL
+);
+```
+
+## 4. `local-download-manager-store`
 
 ```sql
 CREATE TABLE downloads (
@@ -112,7 +129,22 @@ CREATE TABLE downloads (
 CREATE INDEX idx_downloads_status ON downloads(status);
 ```
 
-**5. `lyrics-and-alignment-store`**
+Operational policy (condensed from doc 15 §5, now superseded there):
+
+- Downloads are queued with a configurable max-concurrency setting
+  (default ~3).
+- Failed downloads retry automatically with exponential backoff, capped at
+  3 attempts (tracked via `attempt_count`); after the cap they surface a
+  manual retry button rather than retrying forever.
+- Partial downloads resume via HTTP range requests if the CDN supports it
+  (confirm during Phase 1; otherwise restart-from-zero on retry).
+- The local library root folder is user-configurable, with a sane
+  per-platform default.
+- File naming uses a configurable template shared with the pipeline export
+  templating logic (doc 18 §2.2 reuse rule — one templating implementation,
+  not two).
+
+## 5. `lyrics-and-alignment-store`
 
 ```sql
 CREATE TABLE lyric_documents (
@@ -144,7 +176,7 @@ UPDATE-in-place on the text/timing of an existing document) and flipping
 `is_current` — this gives the lyrics editor full history/undo-to-source for
 free, matching doc 01 §6's "never silently overwrite" requirement.
 
-**6. `canvas-scene-and-keyframe-store`**
+## 6. `canvas-scene-and-keyframe-store`
 
 ```sql
 CREATE TABLE scenes (
@@ -187,7 +219,7 @@ Illustrative (non-binding) `scene_json` shape:
 }
 ```
 
-**7. `automation-pipeline-definition-store`**
+## 7. `automation-pipeline-definition-store`
 
 ```sql
 CREATE TABLE pipelines (
@@ -231,7 +263,7 @@ state) is what makes crash-resumability (doc 04 Phase 7 exit criteria)
 possible: on restart, resume any run with unfinished items rather than
 re-running the whole pipeline.
 
-**8. `recorded-audio-take-store`**
+## 8. `recorded-audio-take-store`
 
 ```sql
 CREATE TABLE recorded_takes (
@@ -251,7 +283,7 @@ Deliberately minimal for Phase 2; Phase 9's DAW work will likely add a
 `recording_sessions` / `tracks_within_session` layer above this rather than
 overloading this table — that decision is deferred to Phase 9's own doc.
 
-**9. Cross-Store Composition Examples (illustrative, not literal SQL)**
+## 9. Cross-Store Composition Examples (illustrative, not literal SQL)
 
 These live in `application-services` code, never as cross-store SQL:
 

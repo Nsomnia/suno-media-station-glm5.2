@@ -1,12 +1,16 @@
-**Multi-Account & Download Manager — Detail**
+# Multi-Account & Download Manager — Detail
 
-**1. Scope**
+> **Last Updated:** 2026-08-25 · **Status:** Active
+>
+> **Status: Superseded (2026-08-25)** — content folded into doc 05 (§7 account lifecycle states) and doc 07 (§3 sync cursors, §4 download policy). Retained for history.
+
+## 1. Scope
 
 Expands on doc 05 (auth mechanics) and doc 07 §§2-4 (schema) with the
 operational/UX detail needed to implement Phase 1's account-switching and
 download-manager features concretely.
 
-**2. Account Lifecycle States**
+## 2. Account Lifecycle States
 
 An account (`accounts` row, doc 07 §2) moves through:
 
@@ -23,7 +27,7 @@ account's entry — since a multi-account power user needs to know at a
 glance which of their several accounts requires attention, without it
 blocking use of their other, still-valid accounts.
 
-**3. Adding an Account — Flow**
+## 3. Adding an Account — Flow
 
 1. User initiates "Add Account" from the account management screen
    (`ui-screen-account-management`).
@@ -43,7 +47,7 @@ blocking use of their other, still-valid accounts.
    the background (via `suno-library-sync-service`) so switching to it
    later doesn't present an empty library while a first sync churns.
 
-**4. Switching Accounts — UX Detail (expands doc 05 §5)**
+## 4. Switching Accounts — UX Detail (expands doc 05 §5)
 
 - Switching is a single click/selection in the always-visible account
   switcher (doc 08 §5) — no re-navigation, no loading-screen interstitial
@@ -57,7 +61,7 @@ blocking use of their other, still-valid accounts.
   background — switching active account for browsing purposes must not
   cancel unrelated in-flight operations tied to another account.
 
-**5. Download Manager — Operational Detail**
+## 5. Download Manager — Operational Detail
 
 - Downloads are queued (not immediately fired) with the concurrency model
   matching what doc 13 §4 established for automation renders — a
@@ -84,7 +88,7 @@ blocking use of their other, still-valid accounts.
   writing two separate path-templating implementations for downloads vs.
   pipeline exports).
 
-**6. Bulk Library Operations — Scope for Phase 1**
+## 6. Bulk Library Operations — Scope for Phase 1
 
 `suno-bulk-library-operations-service` initially supports whatever the
 first real doc 06 capture reveals is *actually* bulk-capable server-side
@@ -96,7 +100,7 @@ item's failure abort a 200-item bulk tag operation). Document explicitly
 in doc 06 §2.5 which reality applies once known, rather than assuming
 native bulk-endpoint support upfront.
 
-**7. Data Ownership Clarification (ties to doc 07 §3-4)**
+## 7. Data Ownership Clarification (ties to doc 07 §3-4)
 
 - `remote_tracks` rows are account-scoped cache entries — the same
   underlying Suno track visible to two different local accounts (unlikely

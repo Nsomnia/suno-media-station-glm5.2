@@ -1,6 +1,8 @@
-**Local Playback & Audio Engine Spec**
+# Local Playback & Audio Engine Spec
 
-**1. Scope**
+> **Last Updated:** 2026-08-25 · **Status:** Active
+
+## 1. Scope
 
 Covers `audio-decode-symphonia-bridge`, `audio-io-cpal-bridge`,
 `local-playback-parity-service` (Phase 2), `recorded-audio-take-store` +
@@ -9,15 +11,19 @@ forward-notes for Phase 9's DAW evolution. This is the "make local files
 feel exactly as good to use as remote streaming" layer, plus the seed of
 audio capture.
 
-**2. Decode Layer (`audio-decode-symphonia-bridge`)**
+## 2. Decode Layer (`audio-decode-symphonia-bridge`)
 
 - Wraps `symphonia` (pure-Rust, actively maintained, wide format support —
   confirmed prior-art choice per doc 03 §3) to decode local audio files
-  (whatever formats Suno downloads actually arrive as — confirm via doc 06
-  capture/observation during Phase 1, likely MP3 and/or WAV/FLAC) into a
+  (whatever formats Suno downloads actually arrive as) into a
   normalized PCM stream: fixed sample format (e.g. `f32` interleaved),
   explicit sample rate and channel count metadata attached to every
   decoded chunk.
+- **Probe actual downloaded file formats during Phase 1 before locking any
+  decode-profile assumptions** — likely MP3/WAV/FLAC, but do not assume
+  formats ahead of observation; confirm what Suno's CDN actually serves
+  via doc 06 capture/observation, then finalize the supported-format list
+  and decode profiles from evidence.
 - This crate's public API should be a simple pull-based iterator/stream
   abstraction (`fn next_chunk(&mut self) -> Option<PcmChunk>`) — consumers
   (playback engine, visualizer feed, Whisper transcription, headless
@@ -26,8 +32,7 @@ audio capture.
   four different downstream features (doc 18 §2.2 duplicate-logic
   guardrail, directly relevant here).
 
-**3. Playback Engine (`audio-io-cpal-bridge` + `local-playback-parity-**
-   service`)
+## 3. Playback Engine (`audio-io-cpal-bridge` + `local-playback-parity-service`)
 
 - `audio-io-cpal-bridge` wraps `cpal` for output device enumeration/
   selection and the actual audio callback loop; kept thin (device I/O
@@ -49,7 +54,7 @@ audio capture.
   than the visualizer needing its own separate playback/decode instance
   for the same audio.
 
-**4. Recording Capture (`audio-recording-capture-service`, Phase 2 slice)**
+## 4. Recording Capture (`audio-recording-capture-service`, Phase 2 slice)
 
 - Minimal v1: enumerate input devices (via the same `audio-io-cpal-bridge`
   crate, input-side), record to a local WAV (or similar lossless/simple
@@ -61,28 +66,16 @@ audio capture.
   Explicitly deferred to Phase 9: mixing, multitrack, effects processing,
   any JUCE-equivalent DSP work.
 
-**5. Phase 9 Forward-Notes (non-binding, for future phase-doc authoring)**
+## 5. Phase 9 Forward-Notes (non-binding, for future phase-doc authoring)
 
-When Phase 9 begins, its own doc should define concrete crate names rather
-than inheriting these placeholder ideas verbatim — but worth recording now
-so the phase isn't started from a blank slate:
+Concrete Phase 9 scope (multitrack sessions, mixing/DSP crate evaluation,
+etc.) is deferred to doc 04's Phase 9 definition — see that phase entry
+when planning begins. The one warning worth keeping here: "recreate
+something like JUCE" is an extremely large undertaking if taken literally,
+and scoping it down to what Suno Station actually needs is the single
+largest scope-inflation risk in the entire roadmap.
 
-- A multitrack session concept will likely need its own store (sessions
-  containing multiple `recorded_takes`-like clips arranged on a timeline
-  with per-clip gain/offset).
-- Mixing (gain, pan, basic EQ) is real-time DSP — evaluate existing Rust
-  DSP crates (`fundsp`, or similar) before hand-rolling filter math, per
-  doc 03 §3.
-- "Recreate something like JUCE" (per the original product notes) is an
-  extremely large undertaking if taken literally (JUCE is a mature,
-  decades-refined C++ audio framework) — Phase 9's actual doc should scope
-  this down explicitly to "the specific DSP/mixing capabilities Suno Station's
-  recording-for-Suno use case needs," not "build a general audio framework
-  competing with JUCE," per doc 00 §3's non-goals precedent. Flag this
-  explicitly to the human orchestrator when Phase 9 planning begins, since
-  it's the single largest scope-inflation risk in the entire roadmap.
-
-**6. Error Handling & Device-Change Resilience**
+## 6. Error Handling & Device-Change Resilience
 
 - Both playback and recording paths must handle a device disconnecting
   mid-use gracefully (e.g. Bluetooth headphones dropping, USB interface

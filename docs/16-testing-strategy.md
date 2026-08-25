@@ -1,6 +1,8 @@
-**Testing Strategy**
+# Testing Strategy
 
-**1. Philosophy**
+> **Last Updated:** 2026-08-25 · **Status:** Active
+
+## 1. Philosophy
 
 Given an LLM writes all code, tests are the primary safety net against
 silent regressions and hallucinated behavior — they are not optional
@@ -8,7 +10,7 @@ polish. Every domain/service/bridge crate ships tests alongside its
 implementation in the same task, per the Definition of Done (doc 03 §5),
 not as a follow-up ticket.
 
-**2. Test Levels by Layer**
+## 2. Test Levels by Layer
 
 - **Foundation crates:** straightforward unit tests (config parsing edge
   cases, token redaction actually redacting, theme token completeness).
@@ -20,7 +22,7 @@ not as a follow-up ticket.
   exploratory sessions when capturing new endpoints). Process-wrapper bridges
   (`video-export-ffmpeg-process`, `whisper-transcription-bridge`) get a thin
   integration test gated behind a feature flag/env var
-  (`Suno Station_TEST_REQUIRES_LOCAL_TOOLING=1`) so CI-less/tool-less environments
+  (`STATION_TEST_REQUIRES_LOCAL_TOOLING=1`) so CI-less/tool-less environments
   can skip them without failing the default `cargo test --workspace` run.
 - **Domain-store crates:** integration tests against a real (temp-file or
   in-memory) SQLite instance via `sqlx`'s test utilities — migrations run,
@@ -37,7 +39,7 @@ not as a follow-up ticket.
   snapshot-tested — this catches "the editor silently corrupts saved data"
   bugs, which are the highest-value UI-adjacent bugs to catch automatically.
 
-**3. Fixture & Mock Data Conventions**
+## 3. Fixture & Mock Data Conventions
 
 - `suno-api-fixture-mocks` holds sanitized, real-capture-derived JSON
   fixtures (see doc 06 §0) organized to mirror doc 06's endpoint categories
@@ -55,8 +57,7 @@ not as a follow-up ticket.
   real secret" as a hard rule regardless of the repo's visibility, since
   visibility/hosting policy may change later.
 
-**4. What CI Enforces (mechanics finalized later per project instructions,**
-   principles fixed now)
+## 4. What CI Enforces (mechanics finalized later per project instructions, principles fixed now)
 
 Actual CI/git workflow tooling is explicitly deferred (per the user's
 instruction to worry about worktrees/branches/releases later), but the
@@ -75,7 +76,7 @@ toward it from day one:
   warning-only in `xtask` and later become a hard CI gate once the codebase
   is large enough for it to matter.
 
-**5. Manual QA Checklists**
+## 5. Manual QA Checklists
 
 For each phase (doc 04), the phase's own feature doc (written when that
 phase begins, per the project's step-by-step prompting plan) should include
@@ -85,7 +86,7 @@ methods, switching accounts, and confirming library re-scoping. These
 checklists are how the human orchestrator spot-verifies agent-claimed
 "exit criteria met" status without needing to read every diff line-by-line.
 
-**6. Performance/Load Testing (light touch until it matters)**
+## 6. Performance/Load Testing (light touch until it matters)
 
 - No formal perf benchmarking suite before Phase 7 (Automation). Phase 7's
   own exit criteria (a real 20-50 track batch run, doc 04) IS the first
@@ -97,7 +98,7 @@ checklists are how the human orchestrator spot-verifies agent-claimed
   automated benchmarks initially — formalize only if a real problem
   surfaces.
 
-**7. Security-Adjacent Testing**
+## 7. Security-Adjacent Testing
 
 - Redaction logic (doc 05 §3, `secrecy`-wrapped credential types) gets an
   explicit unit test asserting that `Debug`/`Display` formatting of a

@@ -1,6 +1,8 @@
-**UI/UX Design System**
+# UI/UX Design System
 
-**1. Aesthetic Direction**
+> **Last Updated:** 2026-08-25 · **Status:** Active
+
+## 1. Aesthetic Direction
 
 **"Modern glass."** Translucent, blurred-background panels with soft
 borders and subtle depth (layered elevation via blur + slight shadow, not
@@ -9,7 +11,7 @@ centric app where the visualizer itself is often the most visually "loud"
 element and UI chrome should feel like it's sitting *above* the show, not
 competing with it.
 
-**2. Theme Inventory (ship-day-one set)**
+## 2. Theme Inventory (ship-day-one set)
 
 - **Catppuccin Latte** (light)
 - **Catppuccin Frappé** (dark, muted)
@@ -26,7 +28,7 @@ should be used rather than hand-transcribing hex codes) per doc 03 §3's
 prior-art mandate. Monokai's palette should similarly be sourced from an
 existing well-known reference rather than invented.
 
-**3. Design Token Model**
+## 3. Design Token Model
 
 `design-tokens-theme-definitions` is pure data — no UI framework
 dependency — so it can be consumed by whatever the UI layer ends up being
@@ -68,15 +70,25 @@ pub struct DesignTokens {
   large (modals/major containers).
 - **Glass panel recipe (applies to: side nav, floating toolbars, modal
   dialogs, the canvas editor's property inspector):** background =
-  `color_background_elevated` at `color_surface_glass_alpha`, backdrop blur
-  = `blur_radius_glass_panel`, 1px border at `color_border_subtle`, subtle
-  drop shadow at `elevation_shadow_opacity`. Content directly over the live
-  visualizer (in preview/canvas-editor screens) uses glass panels; content
-  over a flat background (library browser, settings) may use a lighter/flat
-  elevated surface instead — glass is a deliberate accent for
-  visualizer-adjacent chrome, not applied blindly everywhere.
+  `color_background_elevated` at `color_surface_glass_alpha`, 1px border at
+  `color_border_subtle`, subtle drop shadow at `elevation_shadow_opacity`.
+  Content directly over the live visualizer (in preview/canvas-editor
+  screens) uses glass panels; content over a flat background (library
+  browser, settings) may use a lighter/flat elevated surface instead — glass
+  is a deliberate accent for visualizer-adjacent chrome, not applied blindly
+  everywhere.
+- **Glass blur is explicitly tiered:**
+  - **Tier A — true backdrop blur** (background content behind the panel is
+    blurred): only if the Phase 0 spike proves a workable technique in the
+    chosen UI stack.
+  - **Tier B — translucent elevated fill without blur** (alpha modeled
+    separately in tokens as above): always achievable; this is the
+    guaranteed baseline.
+  - The theme system ships Tier B as the guaranteed baseline and upgrades to
+    Tier A where supported. Record the spike's outcome in the Phase 0 ADR —
+    do not silently assume either tier.
 
-**4. Typography**
+## 4. Typography
 
 - One primary UI font (proportional, geometric/humanist sans — e.g. Inter
   or similar widely-available open font, bundled) for all UI chrome.
@@ -89,7 +101,7 @@ pub struct DesignTokens {
   typography — it's user-customizable per-scene (font, size, color, style)
   via the canvas editor, not tied to the app's own theme tokens.
 
-**5. Layout Conventions**
+## 5. Layout Conventions
 
 - **App shell:** persistent left-side nav (collapsible) for top-level
   sections (Library, Player/Visualizer, Canvas Editor, Automation, Studio,
@@ -109,7 +121,7 @@ pub struct DesignTokens {
   popover, not a modal; "confirm delete" = modal, since it's a genuine
   interrupt).
 
-**6. Motion / Animation Guidelines**
+## 6. Motion / Animation Guidelines
 
 - UI chrome transitions (panel open/close, hover states, theme switch)
   should be quick and subtle — target ~120-200ms, ease-out — never
@@ -121,7 +133,7 @@ pub struct DesignTokens {
   exposes one; fall back to instant transitions for chrome (not for
   user-authored canvas content, which always plays as designed).
 
-**7. Iconography**
+## 7. Iconography
 
 - Use a single consistent open-source icon set (evaluate via prior-art
   search per doc 03 §3 — e.g. `lucide` or `phosphor` icon sets have Rust-
@@ -129,7 +141,7 @@ pub struct DesignTokens {
 - Icons follow the same accent/neutral color tokens as text — no
   hardcoded icon colors outside the token system.
 
-**8. Accessibility Baseline (v1 minimum bar)**
+## 8. Accessibility Baseline (v1 minimum bar)
 
 - All interactive elements reachable via keyboard (tab order sane, no
   keyboard traps).
@@ -143,9 +155,40 @@ pub struct DesignTokens {
   egui's current maturity in that area — note this honestly rather than
   overclaiming.
 
-**9. Component Naming Convention (for `ui-shared-widget-library`)**
+## 9. Component Naming Convention (for `ui-shared-widget-library`)
 
 Match the verbose-naming philosophy from doc 03: `glass_panel_container.rs`,
 `primary_accent_button.rs`, `track_list_row_card.rs`,
 `account_switcher_dropdown.rs`, `keyframe_timeline_ruler.rs`, etc — not
 `panel.rs`, `button.rs`, `row.rs`.
+
+## 10. Global Search
+
+- A top-bar omnibox (per §5's app shell) searching the **locally cached
+  library first** — title/artist/tags against `suno-remote-library-cache-store`.
+- Optional live omnisearch passthrough to Suno's server-side search becomes
+  available only once doc 06 §2.14 is captured; until then, local cache only.
+  Local-cache-first is required; network search is additive, never a
+  replacement.
+- Keyboard shortcut: Cmd/Ctrl+K focuses/opens the omnibox.
+- Results are grouped by kind: Tracks, Playlists, Personas (when available).
+- Enter navigates to the top result / selected group entry; Esc closes the
+  omnibox.
+
+## 11. Settings Screen Inventory
+
+One entry per concern, terse:
+
+- Theme picker (§2's ship-day-one set).
+- Account management link (doc 05).
+- Download/library root folder + file-naming template (doc 07 §4).
+- Max concurrent downloads (doc 07 §4 policy).
+- Default pipeline render concurrency (doc 13 §4).
+- LLM provider config: base URL, API key via keyring, model, per-use-case
+  system prompts (doc 12 §2).
+- Image-gen provider config (doc 12 §3).
+- Whisper model size + storage location.
+- Visualizer preset folders (doc 09 §6).
+- Plugin folder (future, doc 11).
+- Log level / diagnostics.
+- Reduce-motion respect (§6).

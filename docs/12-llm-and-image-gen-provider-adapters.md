@@ -1,6 +1,8 @@
-**LLM Text & Image-Gen Provider Adapters**
+# LLM Text & Image-Gen Provider Adapters
 
-**0. Priority Status (per ADR-008)**
+> **Last Updated:** 2026-08-25 · **Status:** Active
+
+## 0. Priority Status (per ADR-008)
 
 This capability was originally slotted as "Phase 6, after everything else."
 Per ADR-008, it is now positioned as **one of the two options unlocked
@@ -12,7 +14,7 @@ that point without depending on Phase 7 existing yet. Where a design note
 below assumes automation exists, it's flagged explicitly as a Phase-7-or-
 later enhancement, not a hard dependency.
 
-**1. Scope & Philosophy**
+## 1. Scope & Philosophy
 
 Suno Station does not implement LLM inference or image diffusion itself — it
 provides **adapters** over remote APIs and/or local OpenAI-compatible or
@@ -29,7 +31,13 @@ Two independent adapter surfaces:
   scene editor (doc 10) as a "generate art asset" action producing a usable
   `image` element source.
 
-**2. Text Provider Adapter (`llm-text-provider-adapter`)**
+## 2. Text Provider Adapter (`llm-text-provider-adapter`)
+
+Note on async trait style: Rust's native async-in-trait (AFIT, stable since
+1.75) is preferred over the `#[async_trait]` macro unless object safety
+(`dyn` dispatch) is genuinely needed. The `#[async_trait]` attributes in the
+illustrative blocks below are placeholders — final call at implementation
+time.
 
 ```rust
 #[async_trait::async_trait]
@@ -71,7 +79,7 @@ pub struct TextGenerationResponse {
   absorbing provider-specific response quirks rather than the trait itself
   needing provider-specific fields).
 
-**3. Image Provider Adapter (`image-gen-provider-adapter`)**
+## 3. Image Provider Adapter (`image-gen-provider-adapter`)
 
 ```rust
 #[async_trait::async_trait]
@@ -112,7 +120,7 @@ pub struct ImageGenerationResponse {
   `canvas-scene-and-keyframe-store`/the canvas editor never needs to know
   which provider produced an image asset.
 
-**4. Cost/Rate Awareness (light touch, not a hard requirement)**
+## 4. Cost/Rate Awareness (light touch, not a hard requirement)
 
 - Both adapters should surface provider errors distinctly for
   auth-failure vs. rate-limit vs. generic-failure (`TextProviderError`/
@@ -123,7 +131,7 @@ pub struct ImageGenerationResponse {
   backlog item (`docs/99-ideas-backlog.md`) if user demand emerges, not a
   day-one requirement.
 
-**5. Explicit Scope Boundary — Not a General Chat Assistant**
+## 5. Explicit Scope Boundary — Not a General Chat Assistant
 
 This is a **feature-embedded assist tool** (a button inside the lyrics
 editor / canvas editor that calls out and inserts a result), not a
@@ -135,7 +143,7 @@ pillar (doc 00 §2) and risks becoming exactly the kind of scope creep doc
 later, that requires a fresh product decision + ADR, not an organic
 expansion of this adapter crate.
 
-**6. Testing Approach**
+## 6. Testing Approach
 
 Per doc 16 §2, no live-network calls in the automated test suite — both
 providers are tested against fixture-based fakes
@@ -146,7 +154,7 @@ provider verification is a manual QA step (doc 16 §5-style checklist) using
 the human orchestrator's own API key/local server during that phase's
 development.
 
-**7. Interaction with Automation Pipelines (Phase 7, forward-reference only)**
+## 7. Interaction with Automation Pipelines (Phase 7, forward-reference only)
 
 Once Phase 7 exists, a pipeline step type "generate art asset for track
 using prompt template X" or "generate a lyric variant" becomes a natural,

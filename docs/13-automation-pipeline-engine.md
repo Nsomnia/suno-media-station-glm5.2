@@ -1,13 +1,15 @@
-**Automation Pipeline Engine Spec**
+# Automation Pipeline Engine Spec
 
-**1. Scope**
+> **Last Updated:** 2026-08-25 · **Status:** Active
+
+## 1. Scope
 
 Covers `automation-pipeline-definition-store` (doc 07 §7 schema),
 `automation-batch-render-orchestrator`, and `ui-screen-automation-pipeline-
 builder`. This is Phase 7 per doc 04, gated behind the Core Maintainability
 Gate (doc 18 §4) same as doc 12.
 
-**2. Core Principle: Reuse, Never Reimplement, the Single-Track Path**
+## 2. Core Principle: Reuse, Never Reimplement, the Single-Track Path
 
 The single most important architectural rule for this subsystem (stated in
 doc 01 §7 and doc 04 Phase 7 and repeated here because it is the guardrail
@@ -21,7 +23,7 @@ because it's the same code — this is both a correctness guarantee (what
 you designed manually is what you get in bulk) and a direct defense
 against doc 18's duplicate-logic guardrail (§2.2).
 
-**3. Pipeline Definition Model (recap + detail beyond doc 07 §7)**
+## 3. Pipeline Definition Model (recap + detail beyond doc 07 §7)
 
 - **Input selector** — one of:
   - `explicit_ids`: a fixed list of `remote_track_id`s.
@@ -45,11 +47,15 @@ against doc 18's duplicate-logic guardrail (§2.2).
   running Whisper at all — for speed-prioritizing batches).
 - **Export settings** — resolution, frame rate, codec/container (sensible
   defaults, e.g. 1080p/30fps/H.264+AAC in an MP4 container, are fine for
-  v1; expose as configurable, don't hardcode invisibly), and an output
-  path template supporting at least `{track_title}`, `{account_name}`,
-  `{date}` placeholder tokens for file naming/routing.
+  v1; expose as configurable, don't hardcode invisibly), an **`encoder`
+  field** using the same hardware-acceleration fallback chain as doc 09 §5
+  (`videotoolbox` / `nvenc` / `qsv` / `libx264`, probed at startup with CPU
+  fallback), and an output path template supporting at least
+  `{track_title}`, `{account_name}`, `{date}` placeholder tokens for file
+  naming/routing. The encoder choice is surfaced in the pipeline builder UI
+  with a sensible default (best available HW encoder, else `libx264`).
 
-**4. Execution Model**
+## 4. Execution Model
 
 ```
 pipeline_runs (1) ──< pipeline_run_items (many)
@@ -82,7 +88,7 @@ pipeline_runs (1) ──< pipeline_run_items (many)
   "resume interrupted run?" prompt, since a long-crashed run's environment
   (e.g. a since-removed local file) may no longer be valid.
 
-**5. Progress & Monitoring UI**
+## 5. Progress & Monitoring UI
 
 - A run-monitor view showing: overall progress (X/N complete), a live list
   of item statuses, and the ability to cancel a run (in-progress items
@@ -92,7 +98,7 @@ pipeline_runs (1) ──< pipeline_run_items (many)
   with links to output files, so a user can revisit "what did that batch
   from last week produce."
 
-**6. Performance Note (ties to doc 16 §6)**
+## 6. Performance Note (ties to doc 16 §6)
 
 Phase 7's exit criteria (doc 04) explicitly requires a real 20-50 track
 test run as the practical performance validation gate before claiming
@@ -103,7 +109,7 @@ baseline informing the default concurrency setting (§4) and any future
 "how many tracks can this realistically batch overnight on typical
 hardware" guidance surfaced to users.
 
-**7. Non-Goals (recap from doc 04, restated for emphasis)**
+## 7. Non-Goals (recap from doc 04, restated for emphasis)
 
 - No plugin-authored pipeline steps until Phase 8 (doc 11).
 - No per-item scene override in v1.
