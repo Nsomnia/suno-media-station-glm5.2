@@ -45,7 +45,7 @@ theming, logging, config, and the full workspace skeleton in place.
 
 **Crates:**
 - All of `foundation/*`
-- Workspace root `Cargo.toml`, `app/Suno Station-app` binary (opens a themed empty
+- Workspace root `Cargo.toml`, `app/station-app` binary (opens a themed empty
   window with nav placeholder)
 - Stub `lib.rs`/`README.md` for every crate in doc 02's full tree (even ones
   not implemented until much later)

@@ -46,7 +46,7 @@
    UI thread, ever.
 5. **Errors:** every crate defines its own `Error` enum (via `thiserror`); no
    crate returns another crate's error type directly across its public API
-   boundary — wrap it. `anyhow` is allowed only in the top-level `Suno Station-app` binary
+   boundary — wrap it. `anyhow` is allowed only in the top-level `station-app` binary
    and in test code, never in library crate public signatures.
 6. **State ownership:** each domain concern owns its own state store crate
    (e.g. `library-store`, `account-store`, `pipeline-store`) backed by SQLite;
@@ -70,7 +70,7 @@
   bridges).
 - **Layer 4 — UI:** app shell/navigation, per-feature screens, shared widget
   library, theme application.
-- **Layer 5 — Binary:** `Suno Station-app`, composition root only. Should contain
+- **Layer 5 — Binary:** `station-app`, composition root only. Should contain
   almost no logic — just wiring.
 
 Dependencies only ever point downward (Layer 4 → 3 → 2 → 1 → 0). This is enforced
