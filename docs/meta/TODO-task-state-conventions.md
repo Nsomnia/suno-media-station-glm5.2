@@ -42,7 +42,7 @@ read by humans and agents, not rendered as UI.
 > Updated at start/end of every work session (doc 03 §10).
 > Marks legend: [ ] todo · [~] doing · [!] blocked · [?] needs you ·
 > [x] done-awaiting-your-verification · [X] verified-locked · [-] cancelled
-> Current phase: <Phase N — name> (docs/04-phase-roadmap.md)
+> Current phase: <Phase N — name> (docs/product/04-phase-roadmap.md)
 
 ## In Progress
 - [~] <task> — branch: `phase-N/slug` — <one-line status note>

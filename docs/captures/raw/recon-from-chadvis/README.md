@@ -8,7 +8,7 @@ prototype repo **chadvis-projectm-qt**, dated approximately **2026-04**
 endpoints observed in the production web app and related services. They were
 copied here (with a secret-scan/redaction pass applied — no live JWTs or
 long token/cookie values were found) so that this project has a provenance-
-trail for the LEAD entries in `docs/06-suno-api-integration-contract.md`.
+trail for the LEAD entries in `docs/specs/suno-integration/06-suno-api-integration-contract.md`.
 
 `SOURCE-README.md` is the original index README from the source repo,
 renamed to avoid colliding with this file.
@@ -34,6 +34,6 @@ Every endpoint mentioned below carries one of three provenance tiers:
 
 **Every entry here is a LEAD until one fresh Burp capture confirms it.**
 No implementation may depend on an endpoint documented only in these files;
-per doc 03 §7 and `docs/06-suno-api-integration-contract.md`, a fresh
+per doc 03 §7 and `docs/specs/suno-integration/06-suno-api-integration-contract.md`, a fresh
 confirming capture of each endpoint must be provided before it is wired into
 `suno-http-client-core`.

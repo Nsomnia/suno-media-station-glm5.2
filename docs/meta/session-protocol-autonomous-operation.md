@@ -11,7 +11,7 @@ It borrows the proven daemon-loop patterns from the predecessor project's
 
 ## 1. Boot Sequence (every fresh session)
 
-1. Read, in order: `AGENTS.md` → `TODO.md` → `docs/03-agent-constitution.md`
+1. Read, in order: `AGENTS.md` → `TODO.md` → `docs/process/03-agent-constitution.md`
    (if not already internalized this session) → active phase section of
    `docs/04` → any doc a pending task references.
 2. Reality-check: `git status` clean? `git log --oneline -15` matches

@@ -5,7 +5,7 @@
 **Layer:** foundation | external-bridges | domain-stores |
 application-services | ui | shared-test-support
 
-**Planned phase:** Phase <N> — see `docs/04-phase-roadmap.md`
+**Planned phase:** Phase <N> — see `docs/product/04-phase-roadmap.md`
 
 **Public API status:** not yet implemented (stub)
 
