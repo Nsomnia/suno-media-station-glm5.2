@@ -47,7 +47,7 @@
 - [x] Chat-export extraction completed; all 33 blocks landed as files with per-doc commits — verify via `git log --oneline`
 - [x] Meta audit round authored — verify by reviewing AUDIT-findings-and-recommendations.md decision boxes
 - [x] Docs wiki reorganization (22 git-mv renames, ~30 cross-reference updates, hub + category index pages, rewritten root README/AGENTS.md paths) — verify by browsing docs/README.md links
-- [x] Workspace scaffold: 52 members compile warning-free; layering/file-cap guardrails pass; verify via the Verification Commands block in AGENTS.md
+- [x] Workspace scaffold: 52 members compile warning-free; layering/file-cap guardrails pass; all 8 CI checks (fmt/clippy/tests×2/guardrails/cargo-deny×2/docs-links) green on PR #1 — verify via the Verification Commands block in AGENTS.md
 - [x] Prior-art knowledge base: predecessor post-mortem, reference-architecture patterns, design-input mining from sibling takes; 10 reference repos cloned into gitignored `reference-scratchpad/` for your browsing
 
 ## Verified Complete (user-locked)
