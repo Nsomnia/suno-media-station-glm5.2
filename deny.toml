@@ -13,7 +13,10 @@ allow = [
 ]
 
 [advisories]
-vulnerability = "deny"
+# v2 schema: all security vulnerabilities are deny-by-default; only
+# yanked-version handling needs explicit configuration.
+version = 2
+yanked = "deny"
 
 [bans]
 multiple-versions = "warn"
