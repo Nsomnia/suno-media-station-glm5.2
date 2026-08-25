@@ -5,7 +5,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Follow the redaction rules in docs/06-suno-api-integration-contract.md §0
+        Follow the redaction rules in docs/specs/suno-integration/06-suno-api-integration-contract.md §0
         before pasting anything. Replace every secret with a placeholder such as
         `<REDACTED_BEARER>`, `<REDACTED_COOKIE>`, `<REDACTED_DEVICE_ID>` — never
         paste live tokens, cookies, or account identifiers.

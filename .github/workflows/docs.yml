@@ -1,0 +1,30 @@
+# Docs link integrity — catches doc-restructure drift mechanically
+# (the "doc N §M" reference class; see docs/meta/github-infrastructure-plan.md §1).
+
+name: Docs Links
+
+on:
+  pull_request:
+    paths:
+      - "**/*.md"
+  push:
+    branches: [main]
+    paths:
+      - "**/*.md"
+
+jobs:
+  links:
+    name: markdown link check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # Offline mode verifies local relative links only — network links are
+      # intentionally not fetched (rate limits, flakiness).
+      - uses: lycheeverse/lychee-action@v2
+        with:
+          args: >-
+            --offline --no-progress --verbose
+            --exclude 'reference-scratchpad'
+            --exclude 'docs/.agent'
+            './**/*.md'
+          fail: true

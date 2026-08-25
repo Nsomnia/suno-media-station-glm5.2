@@ -5,7 +5,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        This template mirrors the entry format of docs/99-ideas-backlog.md.
+        This template mirrors the entry format of docs/product/99-ideas-backlog.md.
         Ideas captured here get transcribed into that backlog verbatim.
 
   - type: textarea
