@@ -14,6 +14,9 @@ project" operation reliable.
 | `session-protocol-autonomous-operation.md` | The canonical boot sequence + daemon-loop protocol behind the "continue working on this project" prompt. |
 | `suno-api-ground-truth-from-prototype.md` | Suno API evidence recovered from `~/Documents/chadvis-projectm-qt/` and the plan to seed doc 06 with provenance-tagged entries. |
 | `github-infrastructure-plan.md` | CI workflows, PR/issue templates, branch protection, toolchain pins — the zero-to-v1 repo-ready checklist. |
+| `predecessor-postmortem-chadvis-qt.md` | *(lives in [`process/`](../process/predecessor-postmortem-chadvis-qt.md))* Port-faithfully vs do-NOT-replicate distillation of the C++/Qt prototype survey. |
+| `reference-architecture-prior-art.md` | Structural patterns from the owner's own repos + best-in-class OSS (termusic, projectM, Karaoke Mugen, UltraStar Play), with a phase-application checklist. |
+| `design-input-from-prior-takes.md` | Best ideas mined from every sibling attempt at this product; includes the cross-cutting "everyone stalls at the GL bridge" pattern and the deterministic-export spec input. |
 
 ## How decisions get recorded
 
