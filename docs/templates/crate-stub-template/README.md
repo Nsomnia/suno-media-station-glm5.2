@@ -1,4 +1,4 @@
-**<crate-name>**
+# <crate-name>
 
 **Purpose:** <one sentence, mirrors the lib.rs doc-comment>
 

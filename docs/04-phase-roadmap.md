@@ -43,7 +43,7 @@ arc.
 **Goal:** A compiling, running, empty-but-structurally-complete app shell with
 theming, logging, config, and the full workspace skeleton in place.
 
-**Crates:**
+### Crates
 - All of `foundation/*`
 - Workspace root `Cargo.toml`, `app/station-app` binary (opens a themed empty
   window with nav placeholder)
@@ -52,7 +52,7 @@ theming, logging, config, and the full workspace skeleton in place.
 
 **Entry criteria:** This doc set is finalized and approved by the human.
 
-**Exit criteria:**
+### Exit criteria
 - `cargo build --workspace` succeeds with the full crate tree present.
 - App launches to a themed (Catppuccin default) empty window with a nav shell
   and a working theme-switcher (proves the design-token → UI plumbing works
@@ -81,7 +81,7 @@ output yet — this phase is purely scaffolding + the compositing spike.
 **Goal:** Full multi-account Suno auth, and the ability to browse/search the
 remote library (tracks and playlists) and download tracks locally.
 
-**Crates:**
+### Crates
 - `external-bridges/suno-http-client-core`
 - `external-bridges/suno-auth-manual-token-paste`
 - `external-bridges/suno-auth-embedded-webview-login`
@@ -100,7 +100,7 @@ remote library (tracks and playlists) and download tracks locally.
 Suno login + library-list + track-detail flow provided by the human (see doc
 06) so `suno-http-client-core` isn't built against guesses.
 
-**Exit criteria:**
+### Exit criteria
 - User can add an account via manual token paste (bootstrap path) AND via the
   embedded-webview flow for Suno-native login AND via loopback OAuth for at
   least one federated provider (Google or Facebook — whichever the human can
@@ -137,7 +137,7 @@ player UI indistinguishable in capability from browsing remote (queue,
 shuffle, seek, volume, gapless-ish behavior where feasible); basic
 audio-take recording exists.
 
-**Crates:**
+### Crates
 - `external-bridges/audio-decode-symphonia-bridge`
 - `external-bridges/audio-io-cpal-bridge`
 - `domain-stores/recorded-audio-take-store`
@@ -150,7 +150,7 @@ audio-take recording exists.
 **Entry criteria:** Phase 1 done; at least a handful of real downloaded
 tracks available for testing playback.
 
-**Exit criteria:**
+### Exit criteria
 - Local library browser plays local files with standard transport controls,
   queue management (including a shuffle toggle and repeat modes: off/all/one),
   and volume, matching what the remote browser's "preview
@@ -172,7 +172,7 @@ to Suno yet (log it in `99-ideas-backlog.md` if tempting to add early).
 **Goal:** Timed lyrics pulled from Suno where available, enhanced/aligned
 locally via Whisper where needed, editable in a dedicated UI.
 
-**Crates:**
+### Crates
 - `external-bridges/whisper-transcription-bridge`
 - `domain-stores/lyrics-and-alignment-store`
 - `application-services/karaoke-lyric-timing-resolution-service`
@@ -183,7 +183,7 @@ access) done; a confirming capture of the aligned-lyrics endpoint
 (`GET /api/gen/{id}/aligned_lyrics/v2/`, known from recon per doc 06 §2.4)
 provided.
 
-**Exit criteria:**
+### Exit criteria
 - For a track with Suno-provided timed lyrics, the app displays them
   correctly time-synced during local playback.
 - For a track without them (or with sparse/low-confidence timing), the user
@@ -206,7 +206,7 @@ provided.
 first one-off render-to-video pipeline via ffmpeg (no overlay/canvas yet —
 raw visualizer output only).
 
-**Crates:**
+### Crates
 - `external-bridges/visualizer-projectm-ffi-bindings`
 - `external-bridges/visualizer-projectm-frame-bridge`
 - `external-bridges/video-export-ffmpeg-process`
@@ -217,7 +217,7 @@ raw visualizer output only).
 have reshaped this phase's approach via ADR). Phase 2 done (need decoded PCM
 to feed the visualizer).
 
-**Exit criteria:**
+### Exit criteria
 - Live preview screen shows projectM visuals reacting to a locally playing
   track in real time, with preset switching.
 - User can trigger a one-off "render to video" for a track: headless
@@ -242,7 +242,7 @@ automation yet (Phase 7).
 visualizer output, with a keyframe animation system and a small built-in
 effects library, feeding into both live preview and export.
 
-**Crates:**
+### Crates
 - `domain-stores/canvas-scene-and-keyframe-store`
 - `application-services/canvas-overlay-compositing-service`
 - `ui/ui-screen-canvas-scene-editor`
@@ -252,7 +252,7 @@ Phase 3 done if karaoke-bound elements are in scope for this phase's first
 cut (recommended: yes — a "karaoke text" element type bound to the lyrics
 timing service is a flagship feature, not an afterthought).
 
-**Exit criteria:**
+### Exit criteria
 - User can add text and basic graphic (image/shape) elements to a scene,
   position/scale/rotate them freeform on a canvas overlaying a live visualizer
   preview.
@@ -279,7 +279,7 @@ batch automation yet (Phase 7).
 brand art) assist features, as adapters over remote APIs or a local
 OpenAI-compatible/ComfyUI-style server.
 
-**Crates:**
+### Crates
 - `external-bridges/llm-text-provider-adapter`
 - `external-bridges/image-gen-provider-adapter`
 - Small UI touch-points inside existing screens (lyrics editor gets an
@@ -290,7 +290,7 @@ OpenAI-compatible/ComfyUI-style server.
 stand alone). Explicitly deprioritized per ADR-006 — do not pull this phase
 forward ahead of 1-5/7 without an explicit human decision to do so.
 
-**Exit criteria:**
+### Exit criteria
 - At least one text-LLM provider adapter (OpenAI-compatible base, since it
   covers the widest surface) working end-to-end for a "suggest lyric lines"
   or "suggest a lyric edit" assist action.
@@ -313,7 +313,7 @@ selection, upload-a-take→create-song flow, credit-aware spending display.
 This is the "creation front-end" half of the Full-Surface Client pillar
 (doc 00).
 
-**Crates:**
+### Crates
 - `external-bridges/suno-generation-client`
 - `external-bridges/suno-upload-client`
 - `domain-stores/generation-job-store`
@@ -323,7 +323,7 @@ This is the "creation front-end" half of the Full-Surface Client pillar
 alongside Phases 6/7 per doc 04 §0; plus confirming captures for doc 06 §2.8
 (generation) and §2.11 (uploads).
 
-**Exit criteria:**
+### Exit criteria
 - User can submit a generation (prompt/style/persona/instrumental toggles as
   the captured API allows), watch job status poll to completion, and see
   resulting clips land in the library cache.
@@ -344,7 +344,7 @@ pipeline step exists.
 + export settings) into a saved pipeline that batch-processes many tracks
 unattended, at the scale of hundreds/thousands.
 
-**Crates:**
+### Crates
 - `domain-stores/automation-pipeline-definition-store`
 - `application-services/automation-batch-render-orchestrator`
 - `ui/ui-screen-automation-pipeline-builder`
@@ -352,7 +352,7 @@ unattended, at the scale of hundreds/thousands.
 **Entry criteria:** Phases 1, 2, 3, 4, 5 all done — this phase is pure
 orchestration over already-working single-track capability, per doc 01 §7.
 
-**Exit criteria:**
+### Exit criteria
 - User can define a pipeline: input set (e.g., "all tracks tagged X" or an
   explicit list), a scene template, a lyric-source policy (remote-preferred /
   whisper-preferred / remote-only), export settings, output naming/routing.
@@ -376,7 +376,7 @@ step types are a fixed, built-in set for now.
 system (Rhai preferred per doc 03/doc 11), letting users author custom canvas
 effects and/or automation pipeline steps without a Suno Station release.
 
-**Crates:**
+### Crates
 - Replace `external-bridges/plugin-host-stub` internals (keep its public
   trait shape stable where possible) with a real Rhai-backed host.
 - Touch points in `ui-screen-canvas-scene-editor` (custom effect hook) and
@@ -384,7 +384,7 @@ effects and/or automation pipeline steps without a Suno Station release.
 
 **Entry criteria:** Phases 5 and 7 done (plugins hook into both).
 
-**Exit criteria:**
+### Exit criteria
 - A documented, minimal plugin API (Rhai script receives/returns well-defined
   data — e.g., a per-frame property-modifier function for a canvas effect)
   with at least 2 example plugins shipped as references.

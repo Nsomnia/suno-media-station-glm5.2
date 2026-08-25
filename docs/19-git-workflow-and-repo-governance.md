@@ -73,7 +73,7 @@ merger. This is deliberate, not theater:
   *why* things were built a certain way, via `gh pr list`/`gh pr view`,
   which is cheaper to query than re-reading raw commit diffs.
 
-**PR description template:**
+### PR description template
 ```markdown
 **What & Why**
 <1-3 sentences>

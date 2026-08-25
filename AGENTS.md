@@ -1,18 +1,18 @@
-**AGENTS.md**
+## AGENTS.md
 
 If you are an AI agent picking up this repository — read this file first,
 then follow its pointers. Do not start writing code before reading
 `docs/03-agent-constitution.md` and `docs/18-codebase-health-guardrails.md`
 in full — they are binding.
 
-**What This Project Is**
+## What This Project Is
 
 See `docs/00-project-charter.md` for the full vision. One-line summary: a
 native Rust desktop companion for Suno.com with advanced library, playback,
 karaoke/visualizer video, and automation features not available in Suno's
 official clients.
 
-**Who's Building This**
+## Who's Building This
 
 An AI coding agent (primary: GLM-5.2, occasional Google-model assist for
 UI/UX-flavored subtasks), operating inside an opencode CLI + oh-my-openagent
@@ -20,7 +20,7 @@ orchestrator harness. **No human writes code on this project** — the human
 is the orchestrator/reviewer only. You are expected to act as the entire
 development team (see `docs/03-agent-constitution.md` §14).
 
-**Where Everything Is**
+## Where Everything Is
 
 - **`docs/` — the master source of truth.** Read `README.md`'s doc index
   table first to know which doc covers what. Every doc is numbered and
@@ -41,7 +41,7 @@ development team (see `docs/03-agent-constitution.md` §14).
 - **`docs/meta/`** — second-generation process docs (TODO state-mark spec,
   autonomous session protocol, audit archive).
 
-**Non-Negotiable Rules (full detail in doc 03 & doc 18)**
+## Non-Negotiable Rules (full detail in doc 03 & doc 18)
 
 1. Files: ~150-200 line soft cap, 300 line hard cap.
 2. Check crates.io + `gh search` for existing solutions before writing any
@@ -57,12 +57,12 @@ development team (see `docs/03-agent-constitution.md` §14).
 6. When uncertain on anything architecture-level, present the human a
    short multiple-choice breakdown rather than guessing (doc 03 §9).
 
-**Current Status**
+## Current Status
 
 See `TODO.md` for exact current state. High-level: see `docs/04-phase-
 roadmap.md` for the phase plan and which phase is currently active.
 
-**Autonomous Operation**
+## Autonomous Operation
 
 The orchestrator's "continue working on this project" prompt has canonical
 semantics defined in `docs/meta/session-protocol-autonomous-operation.md`
