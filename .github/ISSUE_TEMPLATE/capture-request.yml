@@ -1,0 +1,73 @@
+name: Capture request
+description: Request a traffic capture for a Suno endpoint (doc 06 halt-and-ask workflow)
+labels: ["capture-needed"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Follow the redaction rules in docs/06-suno-api-integration-contract.md §0
+        before pasting anything. Replace every secret with a placeholder such as
+        `<REDACTED_BEARER>`, `<REDACTED_COOKIE>`, `<REDACTED_DEVICE_ID>` — never
+        paste live tokens, cookies, or account identifiers.
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Endpoint category (doc 06 §2.x)
+      options:
+        - "2.1 Authentication"
+        - "2.2 Library / Projects Listing"
+        - "2.3 Track Assets"
+        - "2.4 Timed Lyrics"
+        - "2.5 Bulk / Organizational Operations"
+        - "2.6 Account/Profile"
+        - "2.7 Rate Limits & Error Shapes"
+        - "2.8 Generation"
+        - "2.9 Playlists"
+        - "2.10 Personas / Custom Models"
+        - "2.11 Uploads"
+        - "2.12 Trash / Restore"
+        - "2.13 Billing / Credits (read-only)"
+        - "2.14 Search"
+        - "2.15 Explicit Non-Goals"
+    validations:
+      required: true
+
+  - type: textarea
+    id: action
+    attributes:
+      label: Action performed in official client
+      description: What did you click/do in suno.com immediately before this request?
+    validations:
+      required: true
+
+  - type: textarea
+    id: request
+    attributes:
+      label: Sanitized request
+      description: Method, path, headers, body — with secrets replaced by redaction placeholders.
+      placeholder: |
+        POST /api/... HTTP/2
+        Authorization: Bearer <REDACTED_BEARER>
+        Device-Id: <REDACTED_DEVICE_ID>
+
+        {"example": "field"}
+    validations:
+      required: true
+
+  - type: textarea
+    id: response
+    attributes:
+      label: Sanitized response
+      description: Status code and body — redact IDs/tokens as needed.
+      render: json
+    validations:
+      required: true
+
+  - type: textarea
+    id: quirks
+    attributes:
+      label: Observed quirks (optional)
+      description: Anything inconsistent — odd pagination, unexpected headers, error shapes seen.
+    validations:
+      required: false

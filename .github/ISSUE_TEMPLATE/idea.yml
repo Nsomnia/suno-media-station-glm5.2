@@ -1,0 +1,33 @@
+name: Idea / deferred
+description: Route an idea into the docs/99 backlog format
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This template mirrors the entry format of docs/99-ideas-backlog.md.
+        Ideas captured here get transcribed into that backlog verbatim.
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Idea summary
+      description: One or two sentences — what is the idea?
+    validations:
+      required: true
+
+  - type: input
+    id: source
+    attributes:
+      label: Source phase/task
+      description: Which roadmap phase or TODO task surfaced this? (e.g. "doc 04 Phase 1", "TODO row …")
+    validations:
+      required: true
+
+  - type: textarea
+    id: why-deferred
+    attributes:
+      label: Why deferred-now
+      description: Why is this not being worked on right now?
+    validations:
+      required: true

@@ -1,0 +1,38 @@
+name: Bug report
+description: Something broke or behaves unexpectedly
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Also tell us what you expected to happen instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: input
+    id: phase-crate
+    attributes:
+      label: Phase + crate affected
+      description: e.g. "Phase 1 / crates/domain-stores/library-store-core" (or "unknown")
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Repro steps
+      description: Minimal steps to reproduce; include OS and app build if relevant.
+      placeholder: |
+        1.
+        2.
+        3.
+    validations:
+      required: true

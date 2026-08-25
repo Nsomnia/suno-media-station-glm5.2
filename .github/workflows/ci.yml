@@ -1,0 +1,85 @@
+# CI — every push to main + PRs (docs/16 §4 bar; mechanics per
+# docs/meta/github-infrastructure-plan.md §1).
+#
+# NOTE: Tests requiring local tooling (projectM/ffmpeg/etc.) are skipped by
+# default: they are gated behind the env var STATION_TEST_REQUIRES_LOCAL_TOOLING,
+# which is intentionally unset in CI.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  fmt:
+    name: rustfmt
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo fmt --check
+
+  clippy:
+    name: clippy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+      - uses: Swatinem/rust-cache@v2
+      # macOS runner added to this matrix in later audio phases (docs/14).
+      - run: cargo clippy --workspace --all-targets -- -D warnings
+
+  test:
+    name: tests (${{ matrix.os }})
+    strategy:
+      matrix:
+        # macOS runner addition anticipates audio-phase platform coverage
+        # (docs/14); keep both green from day one.
+        os: [macos-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo test --workspace
+
+  guardrails:
+    name: guardrails
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      # xtask lands in Phase 0; skip these steps until it exists.
+      - name: xtask check-layering
+        if: hashFiles('xtask/Cargo.toml') != ''
+        run: cargo xtask check-layering
+      - name: xtask check-file-caps
+        if: hashFiles('xtask/Cargo.toml') != ''
+        run: cargo xtask check-file-caps
+      # Advisory until doc 18 Gate tightens duplicate-dependency policy.
+      - name: duplicate dependencies (advisory)
+        continue-on-error: true
+        run: cargo tree --workspace --duplicates
+
+  deny:
+    name: cargo-deny
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-deny
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo deny check advisories licenses bans

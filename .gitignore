@@ -23,3 +23,17 @@ target
 
 # Mac OSx garbage
 .DS_Store
+
+# Windows cruft
+Thumbs.db
+
+# Editor directories
+.idea/
+.vscode/
+
+# Local secrets / overrides
+*.local.toml
+
+# Agent runtime scratch
+.agent/stalled_task_log.md
+.agent/mocks/

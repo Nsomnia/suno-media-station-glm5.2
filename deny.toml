@@ -1,0 +1,22 @@
+# cargo-deny config — minimal starting point; the doc 18 Gate (§4) tightens
+# duplicate-version policy later.
+
+[licenses]
+allow = [
+  "MIT",
+  "Apache-2.0",
+  "BSD-3-Clause",
+  "BSD-2-Clause",
+  "ISC",
+  "Unicode-3.0",
+  "Zlib",
+]
+
+[advisories]
+vulnerability = "deny"
+
+[bans]
+multiple-versions = "warn"
+
+[sources]
+unknown-registry = "warn"
