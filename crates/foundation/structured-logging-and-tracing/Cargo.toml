@@ -10,5 +10,13 @@ unsafe_code = "deny"
 missing_docs = "warn"
 
 [dependencies]
-# Intentionally empty — filled in when this crate's phase begins.
-# Prefer workspace.dependencies entries where applicable.
+dirs = { workspace = true }
+serde = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+tracing-appender = { workspace = true }
+# `json` enables the structured JSON fmt layer used for the file output.
+tracing-subscriber = { workspace = true, features = ["json"] }
+
+[dev-dependencies]
+serde_json = { workspace = true }
