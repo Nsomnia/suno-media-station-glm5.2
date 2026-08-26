@@ -72,20 +72,7 @@ jobs:
         continue-on-error: true
         run: cargo tree --workspace --duplicates
 
-  deny:
-    name: cargo-deny (${{ matrix.checks }})
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        checks: [advisories, bans licenses sources]
-    steps:
-      - uses: actions/checkout@v7
-      - uses: dtolnay/rust-toolchain@stable
-      - uses: taiki-e/install-action@v2
-        with:
-          tool: cargo-deny
-      - uses: Swatinem/rust-cache@v2
-      # Surprise CVE advisories stay advisory so unrelated work isn't red;
-      # license/ban violations are hard failures.
-      - run: cargo deny check ${{ matrix.checks }}
-        continue-on-error: ${{ matrix.checks == 'advisories' }}
+  # cargo-deny (advisories/licenses/bans) removed 2026-08-26 by human-orchestrator
+  # decision: license gating is not an early-phase concern. deny.toml is kept in
+  # the repo so `cargo deny check` can be re-enabled locally or in CI later.
+

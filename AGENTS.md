@@ -70,7 +70,8 @@ overlap between concurrent agents.
 cargo build --workspace && cargo clippy --workspace --all-targets -- -D warnings
 cargo fmt --all -- --check && cargo test --workspace
 cargo xtask check-layering && cargo xtask check-file-caps
-cargo deny check advisories licenses bans   # when dependency set changes
+# `cargo deny check` removed from CI by orchestrator decision 2026-08-26
+# (license gating deferred); deny.toml kept for optional local runs.
 ```
 
 CI runs exactly these on every push/PR — keep `main` green at all times.
