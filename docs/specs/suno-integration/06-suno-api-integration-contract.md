@@ -65,55 +65,112 @@ before any implementation depends on it).
 
 ### 2.1 Authentication
 
-- **Method/Path:** Clerk session-token exchange against `https://auth.suno.com/v1`
-- **Auth:** browser `__session` cookie (from embedded webview login) is the root credential; everything downstream derives from it.
-- **Captured:** LEAD (prototype recon 2026-04/2026-08) — needs confirming capture · Tier T1
-- **Flow:**
-  1. Browser login establishes the `__session` cookie for suno.com.
-  2. `GET https://auth.suno.com/v1/client?_is_native=true` (with cookie) returns client state including `last_active_session_id`.
-  3. Read `last_active_session_id` → `POST https://auth.suno.com/v1/client/sessions/{sid}/tokens`.
-  4. Response yields a JWT used as the API bearer token. JWT expires ≈ 1 h but can be re-exchanged for a fresh one as long as the session cookie lives.
+- **Method/Path:** Clerk flow against `https://auth.suno.com/v1`
+- **Auth:** browser Clerk cookies (`__client`, `__client_uat`, suffixed
+  variants like `__session_Jnxw-muT`) are the root credential; everything
+  downstream derives from them.
+- **Captured:** T1-captured 2026-08-25 · evidence:
+  `docs/captures/raw/burp-session-2026-08/clerk-auth-flow.md`
+- **Flow (as observed):**
+  1. Browser/social login: `POST /v1/client/sign_ins` (form-encoded,
+     `strategy=oauth_google&…`) → 302 chain through
+     `/social/login/google-oauth2/` → provider →
+     `/social/complete/google-oauth2/`.
+  2. `GET /v1/client/handshake?redirect_url=…&__clerk_api_version=…&format=nonce`
+     → 302 back to suno.com with a `__clerk_handshake` JWT bridging session
+     cookies onto suno.com.
+  3. `GET /v1/client?__clerk_api_version=<date>&_clerk_js_version=<ver>`
+     returns client state incl. `sessions[].last_active_token.jwt` — **this
+     is where the API bearer comes from**.
+  4. Refresh = `POST /v1/client/sessions/{sid}/touch` (empty body); its
+     response embeds a fresh `last_active_token.jwt`. The prototype-recon
+     path `POST /v1/client/sessions/{sid}/tokens` was NOT observed — do not
+     build against it.
+  5. `POST /v1/client/verify` is a Turnstile captcha heartbeat (204 empty),
+     not a validity preflight. `GET /v1/environment` returns static-ish
+     instance config.
+- **Bearer JWT claims structure** (values redacted in capture):
+  `suno.com/claims/user_id`, `https://suno.ai/claims/clerk_id`,
+  `suno.com/claims/token_type: "access"`, `sun/did`, `aud: "suno-api"`,
+  `sub`, `azp`, `fva`, `iat`/`exp` (~1 h), `iss`, `jit`; RS256 with
+  `kid: suno-api-rs256-key-1`.
 - **Required browser-like headers on studio-api calls:**
   - `Authorization: Bearer {jwt}`
   - `Device-Id`: persisted UUID (generate once, store in keyring/config)
-  - `Browser-Token`: value issued by the site, persist alongside Device-Id
+  - `Browser-Token`: JSON-shaped value `{"token":"<base64 timestamp JSON>"}`
   - `Origin` / `Referer`: from suno.com
   - Browser `User-Agent`
 - **API base:** `https://studio-api-prod.suno.com`
-- **Notes/Gotchas:** keep this lead-status until one fresh capture confirms
-  the `/v1/client` and `/tokens` exchange shapes verbatim.
+- **Notes/Gotchas:** residual uncertainty — whether an expired bearer is
+  silently refreshed via `touch` or forces re-handshake/re-auth is not
+  definitively answered by the capture; plan touch-first with re-auth
+  fallback on persistent 401s.
 
 ### 2.2 Library / Projects Listing
 
-- **Captured:** LEAD (prototype recon 2026-04/2026-08) — needs confirming capture · Tier T1/T2
-- **Notes/Gotchas:**
-  - The library feed v3 endpoint is **POST**, not GET, and is cursor-based:
-    response shape `{items, next_cursor, has_more}`.
-  - Bulk metadata fetch: `GET /api/clips/get_songs_by_ids` (pass multiple clip IDs).
-  - Search: `GET /api/unified/search/omnisearch`.
-  - Pagination style, filters, sort order still need confirming capture.
-- *(status: LEAD — no confirming capture yet)*
+- **Captured:** T1-captured 2026-08-25 · evidence:
+  `docs/captures/raw/burp-session-2026-08/feed-v3-library-listing.md`
+- **Endpoints (confirmed):**
+  - `POST /api/feed/v3` — primary library listing. JSON body
+    `{cursor: <clip-uuid|null>, limit, filters}`; filters include
+    `disliked`/`trashed` (string `"True"`/`"False"`), `workspace {presence,
+    workspaceId}`, `searchText`, `user {presence, userId}`,
+    `ids {presence, clipIds[]}` for bulk-by-id fetch. Response
+    `{clips[], next_cursor?, has_more}` — opaque UUID cursor.
+  - `POST /api/unified/feed` — profile feed; body `{feed_id,
+    target_user_id, page_size}`; response `{feed: {items[], next_cursor}}`
+    with numeric-offset cursor.
+  - `GET /api/clips/get_songs_by_ids?ids=…&ids=…` — repeated query params;
+    response `{clips[]}`.
+  - `GET /api/project/me?page=N&sort=max_created_at_last_updated_clip&show_trashed=false&exclude_shared=false`
+    — page-based workspace listing (`{num_total_results, current_page,
+    projects[]}`).
+  - `GET /api/project/default` — default workspace contents incl.
+    `project_clips[{clip, relative_index, pinned}]`.
+- **Notes/Gotchas:** the shared clip-object schema spans feed/v3,
+  unified/feed, get_songs_by_ids, project/default and pinned-clips — model
+  once. Search-as-you-type fires one request per keystroke (debounce).
+- Still LEAD: `GET /api/unified/search/omnisearch` (not exercised).
 
 ### 2.3 Track Assets
 
-- **Captured:** LEAD (prototype recon 2026-04/2026-08) — needs confirming capture · Tier T1
-- **Notes/Gotchas:**
-  - Audio URLs arrive directly on the clip payloads returned by the feed /
-    `get_songs_by_ids` — there is no separate "get audio URL" call.
-  - Dedicated download path: `GET /api/billing/clips/{clip_id}/download/`.
-  - Cover art URLs also ride on clip payloads; expiry behavior unconfirmed.
-- *(status: LEAD — no confirming capture yet)*
+- **Captured:** T1-captured 2026-08-25 (URL delivery confirmed) · evidence:
+  `docs/captures/raw/burp-session-2026-08/feed-v3-library-listing.md` +
+  `…/clips-relations.md`
+- **Confirmed:**
+  - Audio URLs ride directly on clip payloads: `audio_url` (progressive MP3
+    on `cdn1.suno.ai`) plus `media_urls[]` offering an `m4a-opus` CloudFront
+    variant (`delivery: "progressive"`, optional `encoding`). No separate
+    "get audio URL" call.
+  - Cover art on payloads: `image_url`, `image_large_url`; `video_url` for
+    rendered videos (empty string until ready).
+- Still LEAD: dedicated download path `GET /api/billing/clips/{clip_id}/download/`;
+  CDN URL expiry behavior unconfirmed.
+- Related captured: `POST /api/mango/rights` returns per-playback AES
+  key/IV shapes used by the encrypted web-player variant — see §2.20.
 
 ### 2.4 Timed Lyrics
 
 - **Method/Path:** `GET /api/gen/{id}/aligned_lyrics/v2/`
-- **Captured:** LEAD (prototype recon 2026-04/2026-08) — needs confirming capture · Tier T1
-- **Response Body shape:**
-  - `{ aligned_lyrics: [{word, start_time, end_time, line_index?}], language?, status }`
-  - Word-level timing confirmed by recon; `line_index` presence varies — treat optional.
+- **Captured:** T1-captured 2026-08-25 · evidence:
+  `docs/captures/raw/burp-session-2026-08/aligned-lyrics-v2.md`
+- **Response Body shape (corrected by capture):**
+```json
+{"aligned_words": [
+   {"word": "Howdy, ", "success": true, "start_s": 8.697,
+    "end_s": 8.976, "p_align": 0.99} ],
+ "waveform_data": {}, "hoot_cer": {}, "is_streamed": false,
+ "aligned_lyrics": {}}
+```
+  - Field names are `word`/`start_s`/`end_s` (+`success`, `p_align`) — the
+    recon's `start_time`/`end_time`/`line_index` were wrong. Words carry
+    trailing whitespace/newlines and `[Section]` markers; concatenating
+    `word` values reconstructs the lyric text.
 - **Notes/Gotchas:** this resolves the Phase 3 karaoke question — native
-  word-level timed lyrics exist; Whisper remains fallback only.
-- *(status: LEAD — pending one fresh confirming capture)*
+  word-level timed lyrics exist; Whisper remains fallback only. Companion
+  endpoints `POST …/downbeats_streaming/v2` (beat grid) and
+  `GET …/waveform-aggregates` (mip-mapped min/max levels 11–23) captured in
+  the same file.
 
 ### 2.5 Bulk / Organizational Operations
 
@@ -136,23 +193,46 @@ before any implementation depends on it).
 
 ### 2.8 Generation
 
-- **Captured:** LEAD (prototype recon 2026-04/2026-08) — needs confirming capture · Tier T2/T3
+- **Captured:** `v2-web` T1-captured 2026-08-25 · evidence:
+  `docs/captures/raw/burp-session-2026-08/generation-v2-web.md`; co-write
+  captured via `…/cowrite-lyrics.md`
 - **Endpoints:**
-  - `POST /api/generate/v2-web/` — main song generation request
-  - `POST /api/generate/lyrics/` — custom lyrics generation; poll via
-    `GET /api/generate/lyrics/{id}` until complete
-  - `POST /api/generate/concat/v2/` — extend/concat existing clips
+  - `POST /api/generate/v2-web/` — **T1-captured.** Full body shape on file:
+    captcha `token` (gated by `POST /api/c/check` →
+    `{required, captcha_version}`), `generation_type`, `title`, `tags`,
+    `negative_tags`, `mv` (model external key), `prompt`, 
+    `make_instrumental`, `metadata {create_mode, user_tier,
+    create_session_token, control_sliders, …}`, cover/persona/artist/continue
+    fields, client-generated `transaction_uuid`, `token_provider: 2`,
+    optional `lyrics_project_id`. Response: batch object `{id, clips[]
+    (status "submitted", empty audio_url until ready), metadata,
+    major_model_version, status, created_at, batch_size}` — completion
+    observed by polling the feed/get_songs_by_ids.
+  - `POST /api/generate/cowrite-lyrics/` — **T1-captured** single-shot lyric
+    co-writing (`instruction`, `selected`/`context_before`/`context_after`
+    editor spans, `mode`, `references[]`, `metadata {lyrics_model,
+    enable_thinking}`, optional `lyrics_project_id`) →
+    `{lyrics_request_id, lyrics_id, edited_lyrics}`.
+    Companion `GET /api/lyricists?limit=100`.
+  - `POST /api/generate/lyrics/` + poll — still LEAD.
+  - `POST /api/generate/concat/v2/` — still LEAD.
 - **Rust Model Location:** `suno-http-client-core::models::generation` (future)
 
 ### 2.9 Playlists
 
-- **Captured:** LEAD (prototype recon 2026-04/2026-08) — needs confirming capture · Tier T2
+- **Captured:** listing T1-captured 2026-08-25 · evidence:
+  `docs/captures/raw/burp-session-2026-08/playlists.md`; mutations remain
+  LEAD
 - **Endpoints:**
-  - `GET /api/me/v2/playlists` — list user playlists
-  - `POST /api/playlist/create/`
-  - `POST /api/playlist/set_metadata` — rename/description changes
-  - `POST /api/playlist/update_clips/` — add/remove clips from playlist
-  - `POST /api/playlist/trash/`
+  - `GET /api/playlist/me?page=N&show_trashed=false&show_sharelist=false` —
+    **T1-captured** (note: recon's `GET /api/me/v2/playlists` path is wrong).
+    Page-based pagination; playlist object shape on file in the capture.
+  - `POST /api/playlist/create/` — LEAD
+  - `POST /api/playlist/set_metadata` — LEAD
+  - `POST /api/playlist/update_clips/` — LEAD
+  - `POST /api/playlist/trash/` — LEAD
+- Related captured reads: `GET /api/profiles/pinned-clips`,
+  `GET /api/project/default/pinned-clips`, `GET /api/profiles/{handle}/info`.
 - **Rust Model Location:** `suno-http-client-core::models::playlist` (future)
 
 ### 2.10 Personas / Custom Models
@@ -179,9 +259,18 @@ before any implementation depends on it).
 
 ### 2.13 Billing / Credits (read-only)
 
-- **Captured:** LEAD (prototype recon 2026-04/2026-08) — needs confirming capture · Tier T2
-- **Endpoints:**
-  - `GET /api/billing/info/` — credit balance / subscription info for display
+- **Captured:** T1-captured 2026-08-25 · evidence:
+  `docs/captures/raw/burp-session-2026-08/billing-suite.md`
+- **Endpoints (all T1-captured):**
+  - `GET /api/billing/info/` — subscription + credits + credit-pack catalog +
+    full `plan` object incl. `usage_plan_features[]` feature-flag vocabulary
+  - `GET /api/billing/usage-plans` — plan catalog (`free`, `basic`, `pro`,
+    `premier`, `pro_20250501`)
+  - Supporting reads: `/api/billing/usage-plan-descriptions/`,
+    `/api/billing/usage-plan-faq/`,
+    `/api/billing/usage-plan-web-table-comparison/`,
+    `/api/billing/eligible-discounts/`, `/api/billing/conversion-tracking/`
+  - `POST /api/billing/auto-reload/nudge-check` → `{show: bool}`
 
 ### 2.14 Search
 
@@ -198,6 +287,92 @@ known-but-out-of-scope unless a future ADR pulls them in:
 - B-side / Labs experimental routes (see `b-side.md` in the recon corpus)
 - Orpheus chat API (`suno-ai--orpheus-prod-web.modal.run`)
 - Social graph endpoints (follows, feed of others' creations)
+
+### 2.16 Lyrics Projects
+
+New category — discovered by capture. **T1-captured 2026-08-25** · evidence:
+`docs/captures/raw/burp-session-2026-08/lyrics-projects-crud.md`
+
+- `GET /api/lyrics-projects?limit=50|100&sort=updated_at&cursor=<opaque>` —
+  keyset pagination; cursor is base64 JSON
+  `{field, value, id}`; response `{projects[], next_cursor?}`
+- `POST /api/lyrics-projects` — create: `{"title": "…"}` → full project
+  object (`{id, title, lyrics, created_at, updated_at}`)
+- `POST /api/lyrics-projects/{id}/flush` — debounced autosave:
+  `{"lyrics": "…"}` → `{"updated_at"}`
+- Deletion/update-by-id endpoints not yet captured.
+
+### 2.17 Styles / Prompts v2
+
+New category — discovered by capture. **T1-captured 2026-08-25** · evidence:
+`docs/captures/raw/burp-session-2026-08/styles-prompts-v2.md`
+
+- `GET /api/prompts/v2?per_page=100` → `{styles: [{id, tags, title?,
+  created_at, updated_at}]}`
+- `POST /api/prompts/v2` — create/update saved style:
+  `{"tags": "…", "id": null}` → style object
+- `POST /api/prompts/upsample` — AI tag enhancement:
+  `{"original_tags", "lyrics", "is_instrumental"}` →
+  `{"upsampled", "request_id"}`
+- `GET /api/prompts/suggestions` → `{prompts[], lyrics_prompts[]}`
+
+### 2.18 Personalization & User Config
+
+New category — discovered by capture. **T1-captured 2026-08-25** · evidence:
+`docs/captures/raw/burp-session-2026-08/session-user-config.md`
+
+- `GET /api/session/` — app bootstrap: user profile + authoritative model
+  catalog (`models[]`: `external_key`, `max_lengths`, `capabilities[]`,
+  `allowed_condition_combinations`, feature flags)
+- `GET /api/user/metadata`, `GET /api/user/get_user_session_id/`,
+  `GET /api/user/tos_acceptance`
+- `POST /api/user/user_config/` — read (empty `{}` body) of persisted prefs;
+  mutation shape unconfirmed
+- `GET /api/personalization/memory` (AI style-profile TLDRs),
+  `GET /api/personalization/settings`
+
+### 2.19 Video Render Status
+
+New category — discovered by capture. **T1-captured 2026-08-25** · evidence:
+`docs/captures/raw/burp-session-2026-08/video-render-status.md`
+
+- `GET /api/video/generate/{clip_id}/status/` → `{status, video_url}`
+- `POST /api/video_gen/pending_batches` (`{}`) → `{batch_ids[]}` — startup
+  poll for in-flight video renders.
+
+### 2.20 Clip Relations & Rights
+
+New category — discovered by capture. **T1-captured 2026-08-25** · evidence:
+`docs/captures/raw/burp-session-2026-08/clips-relations.md`
+
+- `GET /api/clips/{id}/attribution` → `{source_clips[]}`
+- `GET /api/clips/parent?clip_id=` → `{is_public}`
+- `GET /api/clips/remixes?clip_id=&limit=` → `{remixes[], has_more}`;
+  `GET /api/clips/remixes/count?clip_id=` → `{count, is_capped}`
+- `GET /api/clips/get_similar/?id=` → `{similar_clips[]}` (large)
+- `GET /api/gen/{id}/comments?order=most_liked` →
+  `{results[], allow_comment, total_count}`
+- `POST /api/mango/rights` — body
+  `{content_params {content_id, content_type}}` → per-playback
+  `{key, iv}` crypto material for the encrypted player variant.
+
+### 2.21 Playback Telemetry / App Chrome / Realtime
+
+Low-value but captured for completeness (**T1-captured 2026-08-25**) ·
+evidence: `docs/captures/raw/burp-session-2026-08/misc-telemetry.md`
+
+- Playback telemetry: `POST /api/gen/{id}/increment_play_count/v2`,
+  `POST /api/gen/{id}/listen_milestone` (`{"milestone":"30s"}`)
+- Server-side playbar sync: `GET/POST /api/music_player/playbar_state`
+- Notifications: `GET /api/notification/v2`, `…/badge-count`,
+  `POST …/clear-badge` (204)
+- Experiments: `POST /api/statsig/experiment/`,
+  `GET /api/statsig/experiment/{name}`
+- Misc one-offs: onboarding (`current`/`start`), cms nudges, `/api/modals`,
+  `/api/labs/configs`, `/api/challenge/progress`, `/api/share/stats`,
+  `/api/custom-model/pending/`, `/api/contests/`
+- Realtime: `GET /api/realtime/discover` → Ably SSE stream URL + auth shape
+  (bearer JWT doubles as the Ably token via `x-ably-token`).
 
 ## 3. Versioning / Drift Handling
 
@@ -249,10 +424,13 @@ and are leads, not captures (see the README in that directory).
 
 ## 6. Current Status Summary
 
-No longer zero-endpoint: this document is now seeded with provenance-tiered
-LEAD entries derived from recon docs recovered from the predecessor prototype
-repo (`chadvis-projectm-qt`, ~2026-04 recon). Every such entry remains a
-LEAD — implementation still requires one fresh Burp capture confirming each
-endpoint before it is used, per doc 03 §7. Categories without LEAD entries
-(§2.5–§2.7) remain empty pending captures. Flag gaps to the human early in
-Phase 1 if confirming captures aren't yet provided.
+As of 2026-08-25, this document is backed by a real T1 capture session
+(`docs/captures/raw/burp-session-2026-08/`): auth flow, library listing,
+generation, co-write lyrics, timed lyrics + downbeats + waveform, lyrics
+projects, billing suite, playlists (listing), clip relations/rights, video
+render status, styles v2, personalization/config, and telemetry are all
+T1-captured and safe to implement against. Still LEAD-only: uploads (§2.11),
+trash/restore (§2.12), search omnisearch (§2.14), generation `lyrics`/
+`concat` paths (§2.8), playlist mutations (§2.9), personas listing (§2.10),
+and error-shape envelope (§2.7 — no non-2xx captured yet). Flag gaps to the
+human early in Phase 1 before depending on any LEAD entry.
