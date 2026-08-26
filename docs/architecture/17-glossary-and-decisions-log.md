@@ -1,6 +1,6 @@
 # Glossary & Architecture Decision Log (ADR)
 
-> **Last Updated:** 2026-08-25 · **Status:** Active
+> **Last Updated:** 2026-08-26 · **Status:** Active
 
 ## Glossary
 
@@ -157,3 +157,29 @@ revisited during development — this is a living doc.
   approved corrections (mechanical fixes, bloat merges, infra adoption).
 - **Consequence:** The numbered docs reflect the audited state; future
   audits append to the same archive rather than re-opening this ADR.
+
+### ADR-013: egui + glow chosen as the UI renderer backend (wgpu rejected)
+- **Status:** Proposed — pending human-orchestrator confirmation (spike
+  evidence complete; see
+  `docs/specs/visuals-and-video/spikes/2026-08-compositing-spike-findings.md`)
+- **Date:** 2026-08
+- **Context:** Doc 01 §4 and audit C-3/C-4 mandated a Phase 0 spike comparing
+  egui+glow same-context compositing vs egui+wgpu cross-API texture sharing
+  for embedding projectM frames under glass-style UI panels, before any
+  renderer-backend commitment. projectM is a GL-only C++ library; the app's
+  visual identity (doc 08 §3) needs true backdrop-blur panels over the live
+  visualizer.
+- **Decision:** Use **egui + glow** (eframe `Renderer::Glow`). projectM renders
+  into an app-owned FBO each frame; its color texture is registered with
+  egui_glow and composited fullscreen under UI chrome in one GL context
+  (zero-copy). Glass panels use the `backdrop-blur-egui` grab-pass path,
+  wrapped behind our own widget. wgpu is rejected: no public GL-texture import
+  (structurally impossible on macOS without unsafe IOSurface/hal work), and
+  CPU readback (~500 MB/s @1080p60 + latency) is a non-starter.
+- **Consequence:** Accept glow's secondary-backend status within eframe's
+  ecosystem as the price of zero-copy compositing. Mitigation:
+  `visualizer-projectm-frame-bridge` keeps an internal trait seam so a future
+  wgpu migration (if projectM ever gains a non-GL backend) touches one module.
+  `backdrop-blur-egui` is pre-release and version-pins egui — pin exactly and
+  isolate behind ui-shared-widget-library. Phase 5 must pin a known-good
+  libprojectM master commit (release v4.1.2 lacks the FBO/frame-time API).
