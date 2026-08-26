@@ -10,4 +10,9 @@ unsafe_code = "deny"
 missing_docs = "warn"
 
 [dependencies]
-# Intentionally empty — the composition root gains dependencies as phases begin.
+app-configuration-loader = { path = "../../crates/foundation/app-configuration-loader" }
+design-tokens-theme-definitions = { path = "../../crates/foundation/design-tokens-theme-definitions" }
+structured-logging-and-tracing = { path = "../../crates/foundation/structured-logging-and-tracing" }
+ui-app-shell-and-navigation = { path = "../../crates/ui/ui-app-shell-and-navigation" }
+eframe = { workspace = true }
+tracing = { workspace = true }
