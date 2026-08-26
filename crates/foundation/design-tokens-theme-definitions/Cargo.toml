@@ -10,5 +10,9 @@ unsafe_code = "deny"
 missing_docs = "warn"
 
 [dependencies]
-# Intentionally empty — filled in when this crate's phase begins.
-# Prefer workspace.dependencies entries where applicable.
+catppuccin = { workspace = true }
+serde = { workspace = true }
+
+[dev-dependencies]
+serde_json = { workspace = true }
+toml = { workspace = true }
