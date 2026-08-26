@@ -58,5 +58,10 @@ fn draw_content_area(ui: &mut Ui, state: &mut ShellState) {
             )))
             .wrap(),
         );
+        ui.add_space(12.0);
+        // QA recipe (doc 08 §7 manual pass) wants at least one accent-filled
+        // control visible in every screen's placeholder, so the token→widget
+        // pipeline can be eyeballed per theme.
+        ui_shared_widget_library::themed_accent_button(ui, state.active_theme(), "Primary Action");
     });
 }
