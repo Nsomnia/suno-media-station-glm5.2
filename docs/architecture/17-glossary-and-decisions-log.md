@@ -159,7 +159,7 @@ revisited during development — this is a living doc.
   audits append to the same archive rather than re-opening this ADR.
 
 ### ADR-013: egui + glow chosen as the UI renderer backend (wgpu rejected)
-- **Status:** Proposed — pending human-orchestrator confirmation (spike
+- **Status:** Accepted (human-orchestrator confirmation 2026-08-26; spike
   evidence complete; see
   `docs/specs/visuals-and-video/spikes/2026-08-compositing-spike-findings.md`)
 - **Date:** 2026-08

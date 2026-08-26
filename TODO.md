@@ -14,7 +14,12 @@
 
 ## In Progress
 
-*(empty)*
+- [~] station-app binary: themed empty window + nav shell + working
+      theme-switcher (ADR-013 glow basis). Shell implemented in
+      `ui-app-shell-and-navigation`, theme application glue in
+      `ui-shared-widget-library`, composed by `station-app` (composition-root
+      only, per doc 02). Proves design-token → UI plumbing end to end per doc
+      04 exit criteria.
 
 ## Up Next (current phase)
 
@@ -33,7 +38,6 @@
       deliberate stub until it has real consumers to design against (YAGNI;
       revisit at Phase 1). Also per human decision 2026-08-26: cargo-deny
       checks removed from CI (license gating deferred; deny.toml kept).
-- [ ] station-app binary: themed empty window + nav shell + working theme-switcher
 - [ ] End-of-phase Senior Architect Pass + Phase Audit Summary (docs/process/18 §3)
 - [ ] Phase 1 start: suno-http-client-core — UNBLOCKED 2026-08-25 by live T1
       captures (`docs/captures/raw/burp-session-2026-08/`): library listing,
@@ -61,8 +65,8 @@ confirmed/corrected are logged in docs/meta/suno-api-ground-truth-from-prototype
       rendering + frosted-glass panel); backdrop-blur-egui grab-pass glass
       works; wgpu path rejected as structurally infeasible. Findings:
       docs/specs/visuals-and-video/spikes/2026-08-compositing-spike-findings.md.
-      **Open decision for you: accept ADR-013 (glow) so station-app shell work
-      proceeds on it.** Honest gap: formal fps measurement not captured;
+      **ADR-013 (egui + glow) ACCEPTED by human 2026-08-26**; station-app shell
+      proceeds on it. Honest gap: formal fps measurement not captured;
       deferred to Phase 5.
 
 - [x] Foundation crates implemented + merged (PRs #8 #9 #10, all CI-green,
