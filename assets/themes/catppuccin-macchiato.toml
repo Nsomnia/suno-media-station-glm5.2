@@ -1,0 +1,75 @@
+name = "Catppuccin Macchiato"
+is_dark = true
+color_surface_glass_alpha = 0.72
+radius_small = 6.0
+radius_medium = 12.0
+radius_large = 20.0
+spacing_unit = 4.0
+blur_radius_glass_panel = 18.0
+elevation_shadow_opacity = 0.4
+
+[color_background_base]
+r = 0.14117648
+g = 0.15294118
+b = 0.22745098
+a = 1.0
+
+[color_background_elevated]
+r = 0.21176471
+g = 0.22745098
+b = 0.30980393
+a = 1.0
+
+[color_border_subtle]
+r = 0.43137255
+g = 0.4509804
+b = 0.5529412
+a = 1.0
+
+[color_text_primary]
+r = 0.7921569
+g = 0.827451
+b = 0.9607843
+a = 1.0
+
+[color_text_secondary]
+r = 0.64705884
+g = 0.6784314
+b = 0.79607844
+a = 1.0
+
+[color_text_disabled]
+r = 0.5019608
+g = 0.5294118
+b = 0.63529414
+a = 1.0
+
+[color_accent_primary]
+r = 0.7764706
+g = 0.627451
+b = 0.9647059
+a = 1.0
+
+[color_accent_secondary]
+r = 0.5411765
+g = 0.6784314
+b = 0.95686275
+a = 1.0
+
+[color_success]
+r = 0.6509804
+g = 0.85490197
+b = 0.58431375
+a = 1.0
+
+[color_warning]
+r = 0.93333334
+g = 0.83137256
+b = 0.62352943
+a = 1.0
+
+[color_danger]
+r = 0.92941177
+g = 0.5294118
+b = 0.5882353
+a = 1.0
