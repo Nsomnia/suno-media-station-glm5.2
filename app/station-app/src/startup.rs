@@ -25,9 +25,9 @@ impl Bootstrapped {
     #[must_use]
     pub fn run() -> Self {
         let config = Arc::new(Mutex::new(load_config_with_fallback()));
-        let logging_guard = install_logging(&config.lock().expect("config lock").body.logging);
+        let logging_guard = install_logging(&lock_config_with_fallback(&config).body.logging);
         let initial_theme =
-            resolve_initial_theme(&config.lock().expect("config lock").body.theme_name);
+            resolve_initial_theme(&lock_config_with_fallback(&config).body.theme_name);
 
         let mut shell_state = ShellState::new(initial_theme);
         let persist_sink = Arc::clone(&config);
@@ -53,6 +53,24 @@ fn load_config_with_fallback() -> AppConfig {
             // Logging is not installed yet, so this can only go to stderr.
             eprintln!("station-app: config load failed ({error}); using defaults");
             AppConfig::with_defaults()
+        }
+    }
+}
+
+/// Reads a snapshot from the shared config without panicking on poison.
+///
+/// Same failure policy as [`persist_theme_choice`]: no `.expect()` on the
+/// config mutex. A poisoned mutex means another thread panicked while
+/// holding it, but the data itself is still readable — we log a warning and
+/// recover the inner value so boot proceeds. Boot-time access is
+/// single-threaded, so poisoning here is effectively unreachable; the
+/// handling exists for uniformity with the persistence path.
+fn lock_config_with_fallback(shared: &Arc<Mutex<AppConfig>>) -> AppConfig {
+    match shared.lock() {
+        Ok(config) => config.clone(),
+        Err(poisoned) => {
+            tracing::warn!("config mutex poisoned at boot; recovering inner value");
+            poisoned.into_inner().clone()
         }
     }
 }
