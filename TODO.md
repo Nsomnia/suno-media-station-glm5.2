@@ -6,7 +6,10 @@
 > Marks legend: `[ ]` todo · `[~]` doing · `[!]` blocked · `[?]` needs you ·
 > `[x]` done-awaiting-your-verification · `[X]` verified-locked · `[-]` cancelled
 >
-> Current phase: **Phase 0 — Foundation** (`docs/product/04-phase-roadmap.md`)
+> Current phase: **Phase 1 — Suno Core** (`docs/product/04-phase-roadmap.md`).
+> Phase 0 closed by agent 2026-08-26 (audit passed, ADR-013 accepted); only
+> remaining Phase 0 evidence is your visual QA of the themed shell (see
+> Awaiting Your Verification).
 >
 > Repo-readiness round 2026-08-25 complete: workspace fully scaffolded and
 > green (build/clippy/fmt/test/xtask), docs reorganized into the wiki taxonomy,
@@ -14,7 +17,11 @@
 
 ## In Progress
 
-- [~] End-of-phase Senior Architect Pass + Phase Audit Summary (docs/process/18 §3)
+- [~] **Phase 1 start:** suno-http-client-core — capture-driven authenticated
+      HTTP client per doc 06 (Clerk session-token exchange, refresh chain
+      client→touch→fallbacks→re-auth, error taxonomy 401/429/430, politeness
+      limiter ≤1 rps sustained / ≤5 burst honoring Retry-After), mock-first
+      scripted-transport tests per design-input §6 / doc 16 §2.
 
 ## Up Next (current phase)
 
@@ -33,17 +40,7 @@
       deliberate stub until it has real consumers to design against (YAGNI;
       revisit at Phase 1). Also per human decision 2026-08-26: cargo-deny
       checks removed from CI (license gating deferred; deny.toml kept).
-- [ ] End-of-phase Senior Architect Pass + Phase Audit Summary (docs/process/18 §3)
-- [ ] Phase 1 start: suno-http-client-core — UNBLOCKED 2026-08-25 by live T1
-      captures (`docs/captures/raw/burp-session-2026-08/`): library listing,
-      generation, aligned lyrics, lyrics projects, billing, auth flow all
-      T1-captured. Residual uncertainty narrowed 2026-08-25 via prototype
-      source evidence (chadvis SunoClient.cpp — lazy refresh, sessions/{sid}/client
-      exchange on clerk.suno.com, no TTL tracking, manual re-auth on 401):
-      silent-background-refresh still unproven either way → implement the
-      doc-06 §2.1 recommended chain (client → touch → fallbacks → re-auth);
-      playlist/upload/trash mutations + error shapes still uncaptured but
-      non-blocking for Phase 1 core.
+- [~] **Phase 1 start:** suno-http-client-core (see In Progress).
 
 ## Blocked / Needs Human Input
 
@@ -53,6 +50,14 @@ listing" satisfied by the 2026-08-25 Burp session; prototype-recon leads it
 confirmed/corrected are logged in docs/meta/suno-api-ground-truth-from-prototype.md §6)*
 
 ## Awaiting Your Verification (agent says done; confirm → remove or lock)
+
+- [x] **Phase 0 CLOSED by agent** (audit passed, no blockers): Senior
+      Architect Pass complete (doc 18 §3) — Phase Audit Summary written to
+      doc 18 §5; audit fixes merged via PR #15 (accent button in shell,
+      speculative constructor removed, poison handling unified, 4 READMEs
+      synced, doc 01 §3 corrected, ADR-014 for error-and-result-conventions
+      deferral, known-debt logged in doc 99). All exit criteria independently
+      re-verified green on main.
 
 - [x] Station-app themed shell COMPLETE (PR #14 merged 2026-08-26): themed
       window + left nav rail (10 destinations mirroring doc 02 screen crates)
