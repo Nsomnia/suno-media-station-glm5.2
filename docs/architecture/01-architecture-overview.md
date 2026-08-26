@@ -73,9 +73,11 @@
 - **Layer 5 — Binary:** `station-app`, composition root only. Should contain
   almost no logic — just wiring.
 
-Dependencies only ever point downward (Layer 4 → 3 → 2 → 1 → 0). This is enforced
-socially/via code review checklist for now; a `cargo-deny`/custom lint check to
-enforce it mechanically is a nice-to-have backlog item, not a blocker.
+Dependencies only ever point downward (Layer 4 → 3 → 2 → 1 → 0). This is
+mechanically enforced by `cargo xtask check-layering`, which fails on any
+upward edge; it runs in CI (.github/workflows/ci.yml `guardrails` job) as of
+Phase 0. Zero exceptions — a task that seems to require an upward dependency
+is a signal the logic is misplaced (see doc 18 §2.1).
 
 ## 4. UI Framework Decision
 
