@@ -14,12 +14,17 @@
 
 ## In Progress
 
-- [~] Implement foundation crates: structured-logging-and-tracing,
-      app-configuration-loader (versioned-config module pattern),
-      design-tokens-theme-definitions (Catppuccin + Monokai) — three parallel
-      per-crate branches via worktrees, 2026-08-25 session. Note:
-      `error-and-result-conventions` stays a deliberate stub until it has real
-      consumers to design against (YAGNI; revisit at Phase 1).
+- [~] egui-glow-vs-wgpu + projectM texture-compositing feasibility spike → ADR
+      (docs/architecture/01 §4, docs/specs/visuals-and-video/09 §4-5; audit
+      C-3/C-4 widened scope incl. glassmorphism tiering + projectM 4.x symbol
+      probe). Research phase COMPLETE 2026-08-26 (@librarian report): glow
+      recommended — projectM 4.2 has `projectm_opengl_render_frame_fbo` +
+      `projectm_set_frame_time`; official projectm-rs binding exists (stale on
+      crates.io, use git dep); backdrop-blur-egui grab-pass fits glass design;
+      wgpu cross-API GL import structurally unrealistic on macOS. Prototype
+      phase re-running after a provider outage killed the first lane mid-build;
+      partial scratch prototype preserved at
+      ../suno-media-station-worktrees/compositing-spike/reference-scratchpad/spike-egui-projectm/.
 
 ## Up Next (current phase)
 
@@ -30,9 +35,15 @@
 - [x] xtask guardrail commands `check-layering` + `check-file-caps` implemented (std-only, fail-safe) with negative tests confirming they catch violations
 - [x] Docs reorganized into wiki taxonomy (`product/ architecture/ specs/<domain>/ phases/<stage>/ process/ meta/`) with hub indexes + cross-reference repair + link-check CI
 - [x] Repo hygiene kit: dependabot, CODEOWNERS, SECURITY.md, CONTRIBUTING.md, docs-link workflow, cargo-deny advisory/bans split, CLAUDE.md→AGENTS.md symlink, nested AGENTS.md orientation files (external-bridges, ui, xtask)
-- [ ] Implement foundation crates: structured-logging-and-tracing, app-configuration-loader (versioned-config module pattern), design-tokens-theme-definitions (Catppuccin + Monokai)
+- [~] Implement foundation crates: structured-logging-and-tracing (#9),
+      app-configuration-loader with versioned-config modules (#8),
+      design-tokens-theme-definitions Catppuccin+Monokai (#10) — ALL MERGED
+      2026-08-26, full verification bar green on main. → awaiting human
+      verification/lock. Note: `error-and-result-conventions` stays a
+      deliberate stub until it has real consumers to design against (YAGNI;
+      revisit at Phase 1). Also per human decision 2026-08-26: cargo-deny
+      checks removed from CI (license gating deferred; deny.toml kept).
 - [ ] station-app binary: themed empty window + nav shell + working theme-switcher
-- [~] egui-glow-vs-wgpu + projectM texture-compositing feasibility spike (docs/architecture/01 §4, docs/specs/visuals-and-video/09 §4-5; audit C-3/C-4 widen scope) → record ADR. Spike MUST also probe projectM 4.x symbol availability (`projectm_set_frame_time`, FBO render path) per design-input doc §1 — research phase dispatched 2026-08-25
 - [ ] End-of-phase Senior Architect Pass + Phase Audit Summary (docs/process/18 §3)
 - [ ] Phase 1 start: suno-http-client-core — UNBLOCKED 2026-08-25 by live T1
       captures (`docs/captures/raw/burp-session-2026-08/`): library listing,
@@ -53,6 +64,17 @@ listing" satisfied by the 2026-08-25 Burp session; prototype-recon leads it
 confirmed/corrected are logged in docs/meta/suno-api-ground-truth-from-prototype.md §6)*
 
 ## Awaiting Your Verification (agent says done; confirm → remove or lock)
+
+- [x] Foundation crates implemented + merged (PRs #8 #9 #10, all CI-green,
+      merged 2026-08-26): `app-configuration-loader` (versioned-config v1
+      modules, defaults < TOML < SMS_ env overrides, atomic save),
+      `structured-logging-and-tracing` (pretty stdout + rotating JSON file
+      layers, RUST_LOG EnvFilter, guard semantics), `design-tokens-theme-
+      definitions` (5 themes via official catppuccin crate, serde round-trip,
+      assets/themes/*.toml). Verify: run the AGENTS.md Verification Commands
+      block; skim the three PRs; optionally launch a test binary that calls
+      load_or_create() + initialize_structured_logging() and prints
+      design_tokens::default_theme().name
 
 - [x] Audit decisions resolved: user approved ALL items in
       docs/meta/AUDIT-findings-and-recommendations.md (confirmed in-session
