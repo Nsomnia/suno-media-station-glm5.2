@@ -32,11 +32,13 @@
 - [ ] Phase 1 start: suno-http-client-core — UNBLOCKED 2026-08-25 by live T1
       captures (`docs/captures/raw/burp-session-2026-08/`): library listing,
       generation, aligned lyrics, lyrics projects, billing, auth flow all
-      captured; doc 06 §§2.1–2.4/2.8/2.9/2.13 + new §2.16–2.21 upgraded to
-      T1-captured. Residual uncertainty: silent-refresh vs re-auth on bearer
-      expiry not definitively answered by the capture (plan touch-first,
-      re-auth fallback); playlist/upload/trash mutations + error shapes
-      still uncaptured but non-blocking for Phase 1 core.
+      T1-captured. Residual uncertainty narrowed 2026-08-25 via prototype
+      source evidence (chadvis SunoClient.cpp — lazy refresh, sessions/{sid}/client
+      exchange on clerk.suno.com, no TTL tracking, manual re-auth on 401):
+      silent-background-refresh still unproven either way → implement the
+      doc-06 §2.1 recommended chain (client → touch → fallbacks → re-auth);
+      playlist/upload/trash mutations + error shapes still uncaptured but
+      non-blocking for Phase 1 core.
 
 ## Blocked / Needs Human Input
 

@@ -101,10 +101,35 @@ before any implementation depends on it).
   - `Origin` / `Referer`: from suno.com
   - Browser `User-Agent`
 - **API base:** `https://studio-api-prod.suno.com`
-- **Notes/Gotchas:** residual uncertainty — whether an expired bearer is
-  silently refreshed via `touch` or forces re-handshake/re-auth is not
-  definitively answered by the capture; plan touch-first with re-auth
-  fallback on persistent 401s.
+- **Prototype implementation evidence (pre-capture era):** the working
+  C++/Qt prototype (`chadvis-projectm-qt/src/suno/SunoClient.cpp:131-196`)
+  refreshed via `POST https://clerk.suno.com/v1/client/sessions/{sid}/client?_is_native=true&_clerk_js_version=5.117.0`
+  with the bearer read from response `jwt` / `response.jwt`, SID discovered
+  from `GET …/client?_is_native=true…` (`last_active_session_id`, fallback
+  `sessions[0].id`) or from the `sid` claim of a `__session*` cookie value
+  used directly as the JWT (cookie precedence: `__session` →
+  `__session_Jnxw-muT` → any `__session*` prefix). Refresh was lazy-only
+  (token empty), no TTL tracking; on 401 it cleared the token and required
+  manual re-auth. Full analysis + verdict table:
+  `docs/captures/raw/burp-session-2026-08/clerk-auth-flow.md` ("Prototype
+  implementation evidence").
+- **Recommended strategy** (reconciles both evidence sources — do not pick
+  silently):
+  1. Primary: capture-proven `GET auth.suno.com/v1/client` →
+     `sessions[].last_active_token.jwt`.
+  2. Refresh: capture-proven `POST …/sessions/{sid}/touch`.
+  3. Fallbacks, documented-but-unverified against today's API: Clerk-standard
+     `POST …/sessions/{sid}/tokens`, then prototype-era
+     `POST clerk.suno.com/v1/client/sessions/{sid}/client?_is_native=true…`;
+     log loudly when a fallback fires and request a fresh capture.
+  4. On studio-api 401: clear bearer → one touch attempt → interactive
+     re-auth; add proactive ~55 min expiry refresh (absent in prototype).
+- **Notes/Gotchas:** residual uncertainty narrowed but not eliminated — the
+  prototype does not prove background silent-refresh survives long sessions
+  (its own scheme was lazy-refresh-on-empty plus manual re-auth), so keep
+  the 401→touch→re-auth chain as the contract; host migration
+  `clerk.suno.com` → `auth.suno.com` is real in captures but the old
+  host+path is unverified (zero captured items for `clerk.suno.com`).
 
 ### 2.2 Library / Projects Listing
 

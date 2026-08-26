@@ -101,3 +101,96 @@
   The ~15-minute `cookie_expires_at` vs ~1-year session expiry asymmetry
   suggests periodic touch suffices, but plan the client to handle a 401 from
   studio-api by attempting touch, then falling back to re-auth.
+
+## Prototype implementation evidence (added 2026-08-25)
+
+Source: working C++/Qt predecessor `~/Documents/chadvis-projectm-qt`
+(read-only, outside repo) — `src/suno/SunoClient.cpp`,
+`src/suno/SunoEndpoints.hpp`, `src/suno/SunoAuthManager.{hpp,cpp}`,
+`src/suno/SunoAuthFailure.hpp`. This code shipped against production Suno,
+so it is behavioral ground truth from the **prototype era** (months before
+this capture); the live surface may have moved since.
+
+### Token acquisition paths (three, in priority order)
+
+1. **System-browser auth** (`SunoAuthManager.cpp:47-61`): login callback hands
+   over a token string; accepted only if it starts with `eyJ` (i.e. a JWT),
+   then persisted via config.
+2. **Cookie-jar parse** (`SunoClient.cpp:68-112`, `setCookie`): splits the
+   pasted/persisted cookie string into a map, then selects the session cookie
+   by precedence: exact `__session` → exact **`__session_Jnxw-muT`**
+   (suffixed variant HARDCODED — matches this capture's observation of
+   instance-suffixed cookies) → any name starting with `__session`. Value must
+   start with `eyJ`; it becomes the bearer directly.
+3. **Clerk SID extraction** (`SunoClient.cpp:114-125`): base64url-decodes the
+   JWT payload and reads claim **`sid`** → cached as `clerkSid_`. (Note: the
+   2026-08-25 capture's studio-api bearer claims did not obviously show `sid`;
+   this may be a Clerk session-token vs Suno access-token distinction.)
+
+### Refresh flow (`SunoClient.cpp:131-196`, `refreshAuthToken`)
+
+- **Trigger:** lazy only — `withValidToken` (lines 198-207) refreshes solely
+  when `token_` is empty (first authenticated call after restore, or after a
+  401 cleared the token). **No proactive TTL/expiry check exists**; the JWT
+  `iat`/`exp` are never parsed for timing.
+- **Step 1 — discover SID** (when missing): `GET https://clerk.suno.com/v1/client?_is_native=true&_clerk_js_version=5.117.0`
+  with raw `Cookie` header and `User-Agent: Mozilla/5.0`; parses
+  `response.last_active_session_id`, falling back to `response.sessions[0].id`;
+  recurses into step 2 on success.
+- **Step 2 — exchange:** `POST` (empty body) to
+  `https://clerk.suno.com/v1/client/sessions/{sid}/client?_is_native=true&_clerk_js_version=5.117.0`
+  — URL assembled from `CLERK_SESSION = "/client/sessions/"` + sid +
+  `CLERK_CLIENT = "/client?_is_native=true&_clerk_js_version="`
+  (`SunoEndpoints.hpp:32-33`, `SunoClient.cpp:170-179`). Bearer read from
+  response JSON path `jwt`, falling back to `response.jwt` (line 184-185).
+- **Host note:** the prototype targets **`clerk.suno.com`**, not
+  `auth.suno.com`. The 2026-08-25 capture shows the current web client
+  exclusively on `auth.suno.com` (same Cloudflare IP). The Burp export bucket
+  named `clerk.suno.com` contains **zero items**, so whether the old
+  host+path still works today is unverified.
+- **Error paths:** 401/"Unauthorized" classified by `isAuthFailure`
+  (`SunoAuthFailure.hpp:13-16`); `handleNetworkError` (`SunoClient.cpp:326-335`)
+  clears the token and emits an error — **no automatic retry/re-auth loop**;
+  the user must re-authenticate. A `isRefreshingToken_` guard flag is
+  declared (`SunoAuthManager.hpp:35`) but never used.
+
+### Reconciliation verdict vs this capture
+
+**Partially superseded — three distinct mechanisms across two eras:**
+
+| Mechanism | Prototype era (code, pre-capture) | Live capture 2026-08-25 |
+|---|---|---|
+| Host | `clerk.suno.com/v1` | `auth.suno.com/v1` |
+| Initial bearer | `__session*` cookie value used AS the JWT | `GET /v1/client` → `sessions[].last_active_token.jwt` |
+| Refresh | `POST /v1/client/sessions/{sid}/client?_is_native=true&…` (worked then; unverified now) | `POST /v1/client/sessions/{sid}/touch` |
+| `_is_native=true` | sent (native client) | absent (browser client sends `__clerk_api_version` instead) |
+
+Notably, the earlier recon doc (`recon-from-chadvis/auth.md`) claimed the
+prototype used `sessions/{sid}/tokens` — **the prototype source contradicts
+that**: no `/tokens` path appears anywhere in the code. The recon doc was
+inaccurate even about its own corpus. Neither era's mechanism confirms the
+other; both `/tokens` and the prototype's `/client`-suffix exchange remain
+unverified against today's API.
+
+The prototype also does **not** resolve the silent-refresh question: its
+strategy was lazy-refresh-on-empty-token plus manual re-auth after 401 —
+there is no evidence of background periodic refresh surviving long sessions
+(either way).
+
+### Recommended implementation strategy for suno-http-client-core
+
+1. Primary: `GET https://auth.suno.com/v1/client` (capture-proven) — extract
+   `last_active_session_id` and `sessions[].last_active_token.jwt`.
+2. Refresh: `POST …/v1/client/sessions/{sid}/touch` (capture-proven), reading
+   the fresh JWT from `response.last_active_token.jwt`.
+3. Documented-but-unverified fallbacks, in order: Clerk-standard
+   `POST …/sessions/{sid}/tokens`, then the prototype-era
+   `POST …/sessions/{sid}/client?_is_native=true…`. Log clearly when a
+   fallback fires so a fresh capture can be requested.
+4. On studio-api 401: clear bearer → one refresh attempt via (2) → prompt
+   interactive re-auth if still failing. Add proactive expiry tracking
+   (~55 min into the ~1 h JWT life) which the prototype lacked.
+5. Keep `_is_native=true` in the toolbox for native flows, but match the
+   captured web-client query params (`__clerk_api_version`,
+   `_clerk_js_version`) as the default.
+
