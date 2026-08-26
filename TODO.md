@@ -29,10 +29,21 @@
 - [ ] station-app binary: themed empty window + nav shell + working theme-switcher
 - [ ] egui-glow-vs-wgpu + projectM texture-compositing feasibility spike (docs/architecture/01 §4, docs/specs/visuals-and-video/09 §4-5; audit C-3/C-4 widen scope) → record ADR. Spike MUST also probe projectM 4.x symbol availability (`projectm_set_frame_time`, FBO render path) per design-input doc §1
 - [ ] End-of-phase Senior Architect Pass + Phase Audit Summary (docs/process/18 §3)
+- [ ] Phase 1 start: suno-http-client-core — UNBLOCKED 2026-08-25 by live T1
+      captures (`docs/captures/raw/burp-session-2026-08/`): library listing,
+      generation, aligned lyrics, lyrics projects, billing, auth flow all
+      captured; doc 06 §§2.1–2.4/2.8/2.9/2.13 + new §2.16–2.21 upgraded to
+      T1-captured. Residual uncertainty: silent-refresh vs re-auth on bearer
+      expiry not definitively answered by the capture (plan touch-first,
+      re-auth fallback); playlist/upload/trash mutations + error shapes
+      still uncaptured but non-blocking for Phase 1 core.
 
 ## Blocked / Needs Human Input
 
-- [!] Meaningful Phase 1 work on suno-http-client-core — blocked on: fresh confirming capture of Clerk auth flow + library listing (leads exist from prototype recon; see docs/meta/suno-api-ground-truth-from-prototype.md §2–3)
+*(empty — Phase 1 suno-http-client-core unblocked as of 2026-08-25; see Up
+Next. Former blocker "fresh confirming capture of Clerk auth flow + library
+listing" satisfied by the 2026-08-25 Burp session; prototype-recon leads it
+confirmed/corrected are logged in docs/meta/suno-api-ground-truth-from-prototype.md §6)*
 
 ## Awaiting Your Verification (agent says done; confirm → remove or lock)
 
