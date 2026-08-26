@@ -14,12 +14,7 @@
 
 ## In Progress
 
-- [~] station-app binary: themed empty window + nav shell + working
-      theme-switcher (ADR-013 glow basis). Shell implemented in
-      `ui-app-shell-and-navigation`, theme application glue in
-      `ui-shared-widget-library`, composed by `station-app` (composition-root
-      only, per doc 02). Proves design-token → UI plumbing end to end per doc
-      04 exit criteria.
+- [~] End-of-phase Senior Architect Pass + Phase Audit Summary (docs/process/18 §3)
 
 ## Up Next (current phase)
 
@@ -58,6 +53,18 @@ listing" satisfied by the 2026-08-25 Burp session; prototype-recon leads it
 confirmed/corrected are logged in docs/meta/suno-api-ground-truth-from-prototype.md §6)*
 
 ## Awaiting Your Verification (agent says done; confirm → remove or lock)
+
+- [x] Station-app themed shell COMPLETE (PR #14 merged 2026-08-26): themed
+      window + left nav rail (10 destinations mirroring doc 02 screen crates)
+      + working theme-switcher persisting to config; token→egui mapping
+      isolated in ui-shared-widget-library (premultiplied-alpha conversion,
+      contrast text); logging + config bootstrapped in composition root.
+      All CI green; launch-verified on main. **Manual QA recipe for you:**
+      `cargo run -p station-app` → confirm (a) window opens with dark
+      Catppuccin Mocha styling, (b) nav rail lists 10 destinations and
+      selection highlights, (c) theme dropdown switches themes live AND is
+      still applied after quitting + relaunching (config persistence),
+      (d) accent button in content area uses theme accent color.
 
 - [x] Compositing spike COMPLETE + ADR-013 drafted (PR #11 merged 2026-08-26):
       projectM 4.x FBO/frame-time symbols confirmed; same-context egui+glow
