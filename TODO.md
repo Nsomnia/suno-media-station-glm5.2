@@ -22,6 +22,9 @@
       client→touch→fallbacks→re-auth, error taxonomy 401/429/430, politeness
       limiter ≤1 rps sustained / ≤5 burst honoring Retry-After), mock-first
       scripted-transport tests per design-input §6 / doc 16 §2.
+- [~] Phase 1 (parallel lane): os-keyring-secret-storage — keyring wrapper +
+      encrypted-file fallback, secrecy-typed API, security-lens review
+      mandatory (constitution §14).
 
 ## Up Next (current phase)
 
