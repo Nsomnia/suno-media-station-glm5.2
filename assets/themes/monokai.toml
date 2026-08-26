@@ -1,0 +1,75 @@
+name = "Monokai"
+is_dark = true
+color_surface_glass_alpha = 0.68
+radius_small = 6.0
+radius_medium = 12.0
+radius_large = 20.0
+spacing_unit = 4.0
+blur_radius_glass_panel = 20.0
+elevation_shadow_opacity = 0.5
+
+[color_background_base]
+r = 0.15294118
+g = 0.15686275
+b = 0.13333334
+a = 1.0
+
+[color_background_elevated]
+r = 0.24313726
+g = 0.23921569
+b = 0.19607843
+a = 1.0
+
+[color_border_subtle]
+r = 0.28627452
+g = 0.28235295
+b = 0.24313726
+a = 1.0
+
+[color_text_primary]
+r = 0.972549
+g = 0.972549
+b = 0.9490196
+a = 1.0
+
+[color_text_secondary]
+r = 0.45882353
+g = 0.44313726
+b = 0.36862746
+a = 1.0
+
+[color_text_disabled]
+r = 0.36078432
+g = 0.35686275
+b = 0.32156864
+a = 1.0
+
+[color_accent_primary]
+r = 0.9764706
+g = 0.14901961
+b = 0.44705883
+a = 1.0
+
+[color_accent_secondary]
+r = 0.4
+g = 0.8509804
+b = 0.9372549
+a = 1.0
+
+[color_success]
+r = 0.6509804
+g = 0.8862745
+b = 0.18039216
+a = 1.0
+
+[color_warning]
+r = 0.99215686
+g = 0.5921569
+b = 0.12156863
+a = 1.0
+
+[color_danger]
+r = 0.9764706
+g = 0.14901961
+b = 0.44705883
+a = 1.0
