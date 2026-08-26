@@ -180,6 +180,22 @@ revisited during development — this is a living doc.
   ecosystem as the price of zero-copy compositing. Mitigation:
   `visualizer-projectm-frame-bridge` keeps an internal trait seam so a future
   wgpu migration (if projectM ever gains a non-GL backend) touches one module.
-  `backdrop-blur-egui` is pre-release and version-pins egui — pin exactly and
-  isolate behind ui-shared-widget-library. Phase 5 must pin a known-good
-  libprojectM master commit (release v4.1.2 lacks the FBO/frame-time API).
+   `backdrop-blur-egui` is pre-release and version-pins egui — pin exactly and
+   isolate behind ui-shared-widget-library. Phase 5 must pin a known-good
+   libprojectM master commit (release v4.1.2 lacks the FBO/frame-time API).
+
+### ADR-014: error-and-result-conventions deliberately remains a stub past Phase 0
+- **Status:** Accepted
+- **Date:** 2026-08
+- **Context:** Doc 04 lists "All of foundation/*" among Phase 0
+  deliverables, but the audit pass found every implemented crate uses plain
+  `thiserror` enums + `Result` with no shared error abstraction needed yet.
+  Building one now would be speculative generality (doc 18 §2.3).
+- **Decision:** `error-and-result-conventions` stays an intentional stub
+  past Phase 0 (YAGNI). It will be designed against the *real* consumer
+  error shapes that Phase 1 crates actually produce, rather than guessed at
+  up front.
+- **Revisit trigger:** any time two or more crates need to share/convert
+  error types across boundaries — concretely expected when Phase 1
+  (accounts/library) service + store crates land; if that never happens,
+  the stub is removed instead.

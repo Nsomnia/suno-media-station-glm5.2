@@ -149,4 +149,33 @@ allowed to take real effort; it is the whole point of the Gate.
 
 | Phase | Date | Crate Count | Approx Total LOC | Layering Violations Found | Notes |
 |---|---|---|---|---|---|
-| — | — | — | — | — | *(no phases completed yet)* |
+| 0 | 2026-08 | 51 (0 new) | ~3.1k (station-app) | 0 | See Phase 0 Audit Summary below |
+
+### Phase 0 Audit Summary (2026-08)
+
+- **Crates added:** 0 — the 51-crate skeleton pre-dated the phase; no new
+  crates were created.
+- **Implemented from stub:** `app-configuration-loader`,
+  `structured-logging-and-tracing`, `design-tokens-theme-definitions`,
+  `ui-shared-widget-library`, `ui-app-shell-and-navigation`, and the
+  `station-app` binary (~3.1k LOC total). One deliberate stub remains:
+  `error-and-result-conventions` (ADR-014).
+- **Layering:** 0 violations; all 7 dependency edges point downward or
+  laterally. Enforcement was upgraded from aspirational (doc 01 §3 used to
+  call it a social/nice-to-have check) to a mechanical CI gate
+  (`cargo xtask check-layering` in the `guardrails` job).
+- **Consolidations required:** none. The dual `LoggingSettings` naming
+  (config v1 section vs logging-crate runtime settings) was assessed as
+  justified decoupling between layers — logged as a watch-item with rename
+  candidate `LoggingSection` (see 99-ideas-backlog known debt).
+- **Docs synced this round:** 4 stale crate READMEs refreshed,
+  doc 01 §3 corrected, ADR entries added (incl. ADR-014), known-debt backlog
+  appended.
+- **Exit criteria:** independently re-verified — build/clippy/fmt/test/
+  xtask guardrails green on the audit branch; compositing spike completed
+  and ADR-013 accepted.
+- **Gut-check (doc 02 + filenames alone):** a fresh agent context CAN
+  navigate this phase's code without reading implementations — verbose
+  crate/file names carry the structure.
+- **Outstanding evidence:** manual human QA of the themed window is still
+  pending; it is the only exit criterion not yet evidenced.

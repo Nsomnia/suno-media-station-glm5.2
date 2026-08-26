@@ -27,17 +27,6 @@ pub struct LoggingGuard {
     _file_writer_guard: WorkerGuard,
 }
 
-impl LoggingGuard {
-    /// Wraps an existing non-blocking writer guard. Exposed for callers that
-    /// manage their own appender plumbing but want the same drop semantics.
-    #[must_use]
-    pub fn from_worker_guard(worker_guard: WorkerGuard) -> Self {
-        Self {
-            _file_writer_guard: worker_guard,
-        }
-    }
-}
-
 /// Installs structured logging using the live process environment for the
 /// OS data directory.
 pub fn initialize_structured_logging(
