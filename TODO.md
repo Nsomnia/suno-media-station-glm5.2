@@ -14,7 +14,12 @@
 
 ## In Progress
 
-*(empty)*
+- [~] Implement foundation crates: structured-logging-and-tracing,
+      app-configuration-loader (versioned-config module pattern),
+      design-tokens-theme-definitions (Catppuccin + Monokai) — three parallel
+      per-crate branches via worktrees, 2026-08-25 session. Note:
+      `error-and-result-conventions` stays a deliberate stub until it has real
+      consumers to design against (YAGNI; revisit at Phase 1).
 
 ## Up Next (current phase)
 
@@ -27,7 +32,7 @@
 - [x] Repo hygiene kit: dependabot, CODEOWNERS, SECURITY.md, CONTRIBUTING.md, docs-link workflow, cargo-deny advisory/bans split, CLAUDE.md→AGENTS.md symlink, nested AGENTS.md orientation files (external-bridges, ui, xtask)
 - [ ] Implement foundation crates: structured-logging-and-tracing, app-configuration-loader (versioned-config module pattern), design-tokens-theme-definitions (Catppuccin + Monokai)
 - [ ] station-app binary: themed empty window + nav shell + working theme-switcher
-- [ ] egui-glow-vs-wgpu + projectM texture-compositing feasibility spike (docs/architecture/01 §4, docs/specs/visuals-and-video/09 §4-5; audit C-3/C-4 widen scope) → record ADR. Spike MUST also probe projectM 4.x symbol availability (`projectm_set_frame_time`, FBO render path) per design-input doc §1
+- [~] egui-glow-vs-wgpu + projectM texture-compositing feasibility spike (docs/architecture/01 §4, docs/specs/visuals-and-video/09 §4-5; audit C-3/C-4 widen scope) → record ADR. Spike MUST also probe projectM 4.x symbol availability (`projectm_set_frame_time`, FBO render path) per design-input doc §1 — research phase dispatched 2026-08-25
 - [ ] End-of-phase Senior Architect Pass + Phase Audit Summary (docs/process/18 §3)
 - [ ] Phase 1 start: suno-http-client-core — UNBLOCKED 2026-08-25 by live T1
       captures (`docs/captures/raw/burp-session-2026-08/`): library listing,
