@@ -25,6 +25,9 @@
 - [~] Phase 1 (parallel lane): os-keyring-secret-storage — keyring wrapper +
       encrypted-file fallback, secrecy-typed API, security-lens review
       mandatory (constitution §14).
+- [~] Phase 1 (parallel lane): suno-auth-manual-token-paste — tolerant parser
+      over pasted JS/JSON/cookie credential blobs, shapes strictly per doc 06
+      captures, secrecy-typed output.
 
 ## Up Next (current phase)
 
