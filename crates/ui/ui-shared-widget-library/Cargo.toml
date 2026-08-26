@@ -10,5 +10,5 @@ unsafe_code = "deny"
 missing_docs = "warn"
 
 [dependencies]
-# Intentionally empty — filled in when this crate's phase begins.
-# Prefer workspace.dependencies entries where applicable.
+design-tokens-theme-definitions = { path = "../../foundation/design-tokens-theme-definitions" }
+egui = { workspace = true }

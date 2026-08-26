@@ -92,3 +92,21 @@ dirs = "6"
 # palette values instead of hand-transcribing hex codes (prior-art mandate).
 catppuccin = "2.8"
 
+# Phase 0 UI stack per ADR-013 (egui + glow renderer). The 0.34 line was
+# validated end-to-end by the compositing spike (backdrop-blur-egui), so it is
+# the pinned minor series. `default-features = false` + explicit feature list
+# mirrors eframe's defaults minus `wgpu`: ADR-013 commits to the glow backend
+# only, and pulling in wgpu would add a large unused dependency tree.
+# Direct egui-glow/glow entries will be added later by the visualizer-
+# compositing work when it starts painting custom frames; plain widget UI
+# needs nothing below eframe/egui.
+egui = "0.34"
+eframe = { version = "0.34", default-features = false, features = [
+    "accesskit",
+    "default_fonts",
+    "glow",
+    "wayland",
+    "web_screen_reader",
+    "x11",
+] }
+
