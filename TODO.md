@@ -14,17 +14,7 @@
 
 ## In Progress
 
-- [~] egui-glow-vs-wgpu + projectM texture-compositing feasibility spike → ADR
-      (docs/architecture/01 §4, docs/specs/visuals-and-video/09 §4-5; audit
-      C-3/C-4 widened scope incl. glassmorphism tiering + projectM 4.x symbol
-      probe). Research phase COMPLETE 2026-08-26 (@librarian report): glow
-      recommended — projectM 4.2 has `projectm_opengl_render_frame_fbo` +
-      `projectm_set_frame_time`; official projectm-rs binding exists (stale on
-      crates.io, use git dep); backdrop-blur-egui grab-pass fits glass design;
-      wgpu cross-API GL import structurally unrealistic on macOS. Prototype
-      phase re-running after a provider outage killed the first lane mid-build;
-      partial scratch prototype preserved at
-      ../suno-media-station-worktrees/compositing-spike/reference-scratchpad/spike-egui-projectm/.
+*(empty)*
 
 ## Up Next (current phase)
 
@@ -64,6 +54,16 @@ listing" satisfied by the 2026-08-25 Burp session; prototype-recon leads it
 confirmed/corrected are logged in docs/meta/suno-api-ground-truth-from-prototype.md §6)*
 
 ## Awaiting Your Verification (agent says done; confirm → remove or lock)
+
+- [x] Compositing spike COMPLETE + ADR-013 drafted (PR #11 merged 2026-08-26):
+      projectM 4.x FBO/frame-time symbols confirmed; same-context egui+glow
+      compositing verified working on macOS (you visually confirmed live
+      rendering + frosted-glass panel); backdrop-blur-egui grab-pass glass
+      works; wgpu path rejected as structurally infeasible. Findings:
+      docs/specs/visuals-and-video/spikes/2026-08-compositing-spike-findings.md.
+      **Open decision for you: accept ADR-013 (glow) so station-app shell work
+      proceeds on it.** Honest gap: formal fps measurement not captured;
+      deferred to Phase 5.
 
 - [x] Foundation crates implemented + merged (PRs #8 #9 #10, all CI-green,
       merged 2026-08-26): `app-configuration-loader` (versioned-config v1
