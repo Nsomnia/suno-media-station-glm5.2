@@ -54,6 +54,30 @@ lives in the commit log — this file is the human-skimmable summary.
 - Doc set normalized to ATX headings with Last-Updated metadata headers.
 - Doc 15 superseded — content folded into docs 05 & 07 (retained for history).
 - README junk tagline removed; full doc index table maintained.
+- **Docs reorganized into a categorized wiki taxonomy** — `product/`,
+  `architecture/`, `specs/<domain>/`, `phases/phase-N-<slug>/`, `process/`;
+  numeric filename prefixes kept so "doc N §M" references stay valid; hub
+  (`docs/README.md`) + per-category index pages added; root README is now a
+  compact landing page delegating to the hub.
+- Root/nested `AGENTS.md` refreshed as hyperlinked front door; `CLAUDE.md`
+  provided as a symlink.
+
+### Added (2026-08-25 repo-readiness round)
+
+- **Workspace scaffolded end-to-end:** 51 library-crate stubs + `station-app`
+  binary + std-only `xtask` guardrails (`check-layering`,
+  `check-file-caps`) — build/clippy/fmt/test all green on day one.
+- **Predecessor post-mortem** (`docs/process/predecessor-postmortem-chadvis-qt.md`):
+  port-faithfully table + do-NOT-replicate list mapped to guardrails.
+- **Prior-art knowledge base**: `docs/meta/reference-architecture-prior-art.md`
+  (owner's own repos + termusic/projectM/Karaoke Mugen/UltraStar Play
+  patterns) and `docs/meta/design-input-from-prior-takes.md` (mined ideas
+  incl. deterministic export spec input, projectM landmine checklist, and the
+  "everyone stalls at the GL bridge" stall-pattern warning).
+- **Repo hygiene kit:** dependabot (cargo+actions), CODEOWNERS, SECURITY.md,
+  CONTRIBUTING.md, markdown link-check workflow, cargo-deny advisories/bans
+  split, nested AGENTS.md orientation files, gitignored
+  `reference-scratchpad/` with ten cloned reference repos.
 
 ## [Unreleased-in-planning] — Phase 0
 

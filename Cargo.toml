@@ -22,6 +22,8 @@ members = [
     "crates/external-bridges/llm-text-provider-adapter",
     "crates/external-bridges/image-gen-provider-adapter",
     "crates/external-bridges/plugin-host-stub",
+    "crates/external-bridges/suno-generation-client",
+    "crates/external-bridges/suno-upload-client",
 
     "crates/domain-stores/account-profile-store",
     "crates/domain-stores/suno-remote-library-cache-store",
@@ -29,6 +31,7 @@ members = [
     "crates/domain-stores/lyrics-and-alignment-store",
     "crates/domain-stores/canvas-scene-and-keyframe-store",
     "crates/domain-stores/automation-pipeline-definition-store",
+    "crates/domain-stores/generation-job-store",
     "crates/domain-stores/recorded-audio-take-store",
 
     "crates/application-services/suno-library-sync-service",
@@ -52,9 +55,12 @@ members = [
     "crates/ui/ui-screen-automation-pipeline-builder",
     "crates/ui/ui-screen-settings-and-theming",
     "crates/ui/ui-screen-recording-studio",
+    "crates/ui/ui-screen-creation-studio",
 
     "crates/shared-test-support/suno-api-fixture-mocks",
     "crates/shared-test-support/deterministic-test-clock-and-ids",
+
+    "xtask",
 ]
 
 [workspace.package]

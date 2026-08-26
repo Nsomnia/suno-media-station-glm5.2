@@ -73,8 +73,11 @@ jobs:
         run: cargo tree --workspace --duplicates
 
   deny:
-    name: cargo-deny
+    name: cargo-deny (${{ matrix.checks }})
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        checks: [advisories, bans licenses sources]
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
@@ -82,4 +85,7 @@ jobs:
         with:
           tool: cargo-deny
       - uses: Swatinem/rust-cache@v2
-      - run: cargo deny check advisories licenses bans
+      # Surprise CVE advisories stay advisory so unrelated work isn't red;
+      # license/ban violations are hard failures.
+      - run: cargo deny check ${{ matrix.checks }}
+        continue-on-error: ${{ matrix.checks == 'advisories' }}

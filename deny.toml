@@ -2,6 +2,10 @@
 # duplicate-version policy later.
 
 [licenses]
+# Internal workspace crates are unpublished (publish = false, "UNLICENSED")
+# and are not valid SPDX expressions by design — skip license gating for
+# private crates; third-party dependencies must satisfy the allowlist.
+private = { ignore = true }
 allow = [
   "MIT",
   "Apache-2.0",
@@ -13,7 +17,10 @@ allow = [
 ]
 
 [advisories]
-vulnerability = "deny"
+# v2 schema: all security vulnerabilities are deny-by-default; only
+# yanked-version handling needs explicit configuration.
+version = 2
+yanked = "deny"
 
 [bans]
 multiple-versions = "warn"

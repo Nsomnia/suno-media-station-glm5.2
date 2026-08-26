@@ -37,3 +37,7 @@ Thumbs.db
 # Agent runtime scratch
 .agent/stalled_task_log.md
 .agent/mocks/
+
+# Reference repositories cloned for prior-art study (doc 03 §3 / §12) —
+# kept in-tree so the human can browse them too; never committed.
+reference-scratchpad/

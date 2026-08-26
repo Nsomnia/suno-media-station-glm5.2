@@ -1,0 +1,14 @@
+[package]
+name = "suno-generation-client"
+version = "0.1.0"
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lints.rust]
+unsafe_code = "deny"
+missing_docs = "warn"
+
+[dependencies]
+# Intentionally empty — filled in when this crate's phase begins.
+# Prefer workspace.dependencies entries where applicable.

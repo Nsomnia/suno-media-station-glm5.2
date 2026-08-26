@@ -1,0 +1,4 @@
+# Cargo-xtask convention (https://github.com/matklad/cargo-xtask):
+# lets `cargo xtask <command>` dispatch to the workspace `xtask` crate.
+[alias]
+xtask = "run -p xtask --"
