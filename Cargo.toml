@@ -101,7 +101,7 @@ catppuccin = "2.8"
 # compositing work when it starts painting custom frames; plain widget UI
 # needs nothing below eframe/egui.
 egui = "0.34"
-eframe = { version = "0.34", default-features = false, features = [
+eframe = { version = "0.36", default-features = false, features = [
     "accesskit",
     "default_fonts",
     "glow",
